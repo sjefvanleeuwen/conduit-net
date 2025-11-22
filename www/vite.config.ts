@@ -1,5 +1,15 @@
 import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { resolve, parse } from 'path'
+import { readdirSync } from 'fs'
+
+// Automatically find all HTML files in the root directory
+const htmlInputs = {};
+readdirSync(__dirname).forEach(file => {
+  if (file.endsWith('.html')) {
+    const name = parse(file).name;
+    htmlInputs[name] = resolve(__dirname, file);
+  }
+});
 
 export default defineConfig({
   root: './',
@@ -7,10 +17,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        blog: resolve(__dirname, 'blog.html'),
-      },
+      input: htmlInputs,
     },
   },
   server: {

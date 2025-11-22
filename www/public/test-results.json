@@ -1,31 +1,31 @@
 {
     "passed":  4,
-    "timestamp":  "2025-11-22T20:47:32.8911393+01:00",
+    "timestamp":  "2025-11-22T20:54:02.3086503+01:00",
     "failed":  0,
     "total":  4,
     "tests":  [
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0049008",
+                      "duration":  "00:00:00.0066589",
                       "name":  "ConduitNet.Tests.Unit.ConduitMessageTests.Properties_ShouldBeSettable",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0019354",
+                      "duration":  "00:00:00.0017197",
+                      "name":  "ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0023883",
                       "name":  "ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithValidType_ShouldSetFilterType",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0084993",
+                      "duration":  "00:00:00.0104601",
                       "name":  "ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithInvalidType_ShouldThrowArgumentException",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0019780",
-                      "name":  "ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults",
                       "errorMessage":  null
                   }
               ],
