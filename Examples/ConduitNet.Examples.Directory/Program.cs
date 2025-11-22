@@ -24,7 +24,9 @@ public class MyDirectoryNode : DirectoryNode
         // Register Client for IUserService (so we can test calling Api2)
         services.AddConduitClient<IUserService>();
         services.AddConduitClient<ITelemetryCollector>();
-        services.AddTransient<MyBusinessLogic>();
+        
+        // Run a background task to simulate traffic
+        services.AddHostedService<WorkloadGenerator>();
 
         // Configure OpenTelemetry
         services.AddOpenTelemetry()
@@ -44,28 +46,42 @@ public class MyDirectoryNode : DirectoryNode
     protected override void Configure(WebApplication app)
     {
         base.Configure(app);
-
-        app.MapGet("/trigger", async (MyBusinessLogic logic) => 
-        {
-            await logic.DoWorkAsync();
-            return Results.Ok("RPC Call Completed. Check Console/Logs.");
-        });
     }
 }
 
-public class MyBusinessLogic
+public class WorkloadGenerator : BackgroundService
 {
-    private readonly IUserService _userService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public MyBusinessLogic(IUserService userService)
+    public WorkloadGenerator(IServiceProvider serviceProvider)
     {
-        _userService = userService;
+        _serviceProvider = serviceProvider;
     }
 
-    public async Task DoWorkAsync()
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var user = new UserDto { Name = "DirectoryAdmin", Email = "admin@conduit.net", Username = "admin" };
-        await _userService.RegisterUserAsync(user);
+        // Wait for the mesh to stabilize
+        await Task.Delay(5000, stoppingToken);
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try 
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+                
+                var user = new UserDto { Name = "DirectoryAdmin", Email = "admin@conduit.net", Username = "admin" };
+                await userService.RegisterUserAsync(user);
+                
+                Console.WriteLine("[WorkloadGenerator] Registered user via RPC");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WorkloadGenerator] RPC failed: {ex.Message}");
+            }
+
+            await Task.Delay(10000, stoppingToken);
+        }
     }
 }
 

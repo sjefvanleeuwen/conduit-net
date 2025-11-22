@@ -17,8 +17,6 @@ namespace ConduitNet.Node
         protected override void Configure(WebApplication app)
         {
             app.MapConduitService<IConduitDirectory>();
-            
-            app.MapGet("/", () => "Conduit Directory Node Running");
         }
     }
 }

@@ -16,9 +16,9 @@ namespace ConduitNet.Deployment
 
     public class ServiceNode
     {
-        public string Id { get; set; }
-        public string ServiceName { get; set; } // e.g. "ConduitNet.Examples.Directory"
-        public string ExecutablePath { get; set; } // For localhost driver
+        public required string Id { get; set; }
+        public required string ServiceName { get; set; } // e.g. "ConduitNet.Examples.Directory"
+        public required string ExecutablePath { get; set; } // For localhost driver
         public int Port { get; set; }
         public Dictionary<string, string> EnvironmentVariables { get; set; } = new();
         public List<string> Arguments { get; set; } = new();
