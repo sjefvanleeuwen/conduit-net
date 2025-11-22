@@ -1,5 +1,13 @@
 $ErrorActionPreference = "Continue"
 
+# Setup Logging
+$publicDir = Join-Path $PSScriptRoot "www/public"
+if (-not (Test-Path $publicDir)) { New-Item -ItemType Directory -Path $publicDir -Force | Out-Null }
+$logPath = Join-Path $publicDir "build.log"
+
+# Start Transcript to capture build output
+try { Start-Transcript -Path $logPath -Force -ErrorAction SilentlyContinue } catch { Write-Warning "Could not start transcript" }
+
 $unitTestExitCode = 0
 $e2eTestExitCode = 0
 
@@ -41,6 +49,15 @@ function Import-TrxResults {
 $tests += Import-TrxResults -trxPath (Join-Path $PSScriptRoot "unit_tests.trx") -type "Unit"
 $tests += Import-TrxResults -trxPath (Join-Path $PSScriptRoot "e2e_tests.trx") -type "E2E"
 
+# Stop Transcript before reading it
+try { Stop-Transcript -ErrorAction SilentlyContinue } catch {}
+
+# Read Build Log
+$buildLogContent = ""
+if (Test-Path $logPath) {
+    $buildLogContent = Get-Content $logPath -Raw
+}
+
 # Calculate summary
 $total = $tests.Count
 $passed = ($tests | Where-Object { $_.outcome -eq 'Passed' }).Count
@@ -63,6 +80,7 @@ $json = @{
     skipped = $skipped
     timestamp = (Get-Date).ToString("o")
     buildInfo = $buildInfo
+    buildLog = $buildLogContent
     tests = $tests
 } | ConvertTo-Json -Depth 10
 

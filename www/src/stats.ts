@@ -25,6 +25,7 @@ interface TestResults {
     skipped: number;
     timestamp: string;
     buildInfo?: BuildInfo;
+    buildLog?: string;
     tests: TestDetail[];
 }
 
@@ -190,6 +191,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 renderTable(unitTests, 'Unit Tests');
                 renderTable(e2eTests, 'End-to-End Tests');
+
+                // Render Build Log
+                const logContainer = document.getElementById('build-log-container');
+                if (logContainer) {
+                    if (data.buildLog) {
+                        logContainer.innerText = data.buildLog;
+                    } else {
+                        logContainer.innerHTML = '<em>No build log available.</em>';
+                    }
+                }
 
             } else {
                 listContainer.innerHTML = '<p>No detailed test results available.</p>';
