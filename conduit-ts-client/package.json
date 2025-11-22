@@ -1,0 +1,31 @@
+{
+  "name": "conduit-ts-client",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/conduit-client.umd.cjs",
+  "module": "./dist/conduit-client.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/conduit-client.js",
+      "require": "./dist/conduit-client.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.0.0-beta2"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^7.2.4",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.13"
+  }
+}
