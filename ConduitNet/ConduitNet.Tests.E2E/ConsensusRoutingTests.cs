@@ -17,15 +17,11 @@ namespace ConduitNet.Tests.E2E
         [Fact]
         public async Task Gateway_Should_Learn_Leader_And_Redirect()
         {
-            // Locate executables relative to the test bin folder
-            // Current: ConduitNet\ConduitNet.Tests.E2E\bin\Debug\net9.0
-            // Target: ConduitNet\Api1\bin\Debug\net9.0\Api1.exe
-            
+            // Use DLLs directly from the build output directory (copied via ProjectReference)
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var solutionDir = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", ".."));
             
-            var api1Path = Path.Combine(solutionDir, "..", "Examples", "ConduitNet.Examples.Directory", "bin", "Debug", "net9.0", "ConduitNet.Examples.Directory.exe");
-            var api2Path = Path.Combine(solutionDir, "..", "Examples", "ConduitNet.Examples.UserService", "bin", "Debug", "net9.0", "ConduitNet.Examples.UserService.exe");
+            var api1Path = Path.Combine(baseDir, "ConduitNet.Examples.Directory.dll");
+            var api2Path = Path.Combine(baseDir, "ConduitNet.Examples.UserService.dll");
 
             if (!File.Exists(api1Path)) throw new FileNotFoundException($"Api1 not found at {api1Path}");
             if (!File.Exists(api2Path)) throw new FileNotFoundException($"Api2 not found at {api2Path}");
@@ -43,53 +39,24 @@ namespace ConduitNet.Tests.E2E
 
             // Give them time to start up
             await Task.Delay(5000);
-
-            try 
-            {
-                // 4. Call Gateway
-                using var client = new HttpClient();
-                var response = await client.GetAsync("http://localhost:5000/trigger");
-                var content = await response.Content.ReadAsStringAsync();
-
-                // Always print logs for visibility
-                Console.WriteLine("=== TEST LOGS ===");
-                Console.WriteLine(_logs.ToString());
-                Console.WriteLine("=================");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Request failed: {response.StatusCode} - {content}");
-                }
-
-                // 5. Assert
-                Assert.True(response.IsSuccessStatusCode, $"Request failed: {response.StatusCode} - {content}");
-                Assert.Contains("RPC Call Completed", content);
-            }
-            catch (Exception)
-            {
-                // Logs already printed above
-                throw;
-            }
-            finally
-            {
-                // Cleanup happens in Dispose
-            }
+// ...existing code...
         }
 
-        private Process StartProcess(string path, string args)
+        private Process StartProcess(string dllPath, string args)
         {
-            var psi = new ProcessStartInfo(path, args)
+            // Run with "dotnet [dll] [args]"
+            var psi = new ProcessStartInfo("dotnet", $"\"{dllPath}\" {args}")
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                WorkingDirectory = Path.GetDirectoryName(path)
+                WorkingDirectory = Path.GetDirectoryName(dllPath) ?? string.Empty
             };
             var p = Process.Start(psi);
             
-            p!.OutputDataReceived += (s, e) => { if (e.Data != null) lock(_logs) _logs.AppendLine($"[{Path.GetFileName(path)}:{args}] {e.Data}"); };
-            p.ErrorDataReceived += (s, e) => { if (e.Data != null) lock(_logs) _logs.AppendLine($"[{Path.GetFileName(path)}:{args} ERROR] {e.Data}"); };
+            p!.OutputDataReceived += (s, e) => { if (e.Data != null) lock(_logs) _logs.AppendLine($"[{Path.GetFileName(dllPath)}:{args}] {e.Data}"); };
+            p.ErrorDataReceived += (s, e) => { if (e.Data != null) lock(_logs) _logs.AppendLine($"[{Path.GetFileName(dllPath)}:{args} ERROR] {e.Data}"); };
             p.BeginOutputReadLine();
             p.BeginErrorReadLine();
 

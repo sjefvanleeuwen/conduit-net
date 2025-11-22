@@ -1,19 +1,17 @@
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
-Write-Host "Running Unit Tests..."
-$trxFileName = "test_results.trx"
-$trxPath = Join-Path $PSScriptRoot $trxFileName
-
-# Remove old trx if exists
-if (Test-Path $trxPath) { Remove-Item $trxPath }
+$unitTestExitCode = 0
+$e2eTestExitCode = 0
 
 # Run Unit Tests
 Write-Host "Running Unit Tests..."
 dotnet test ConduitNet/ConduitNet.Tests.Unit/ConduitNet.Tests.Unit.csproj --nologo --results-directory $PSScriptRoot --logger "trx;LogFileName=unit_tests.trx"
+$unitTestExitCode = $LASTEXITCODE
 
 # Run E2E Tests
 Write-Host "Running E2E Tests..."
 dotnet test ConduitNet/ConduitNet.Tests.E2E/ConduitNet.Tests.E2E.csproj --nologo --results-directory $PSScriptRoot --logger "trx;LogFileName=e2e_tests.trx"
+$e2eTestExitCode = $LASTEXITCODE
 
 $tests = @()
 
@@ -67,3 +65,9 @@ Write-Host "Building Website..."
 Set-Location www
 npm run build
 Set-Location ..
+
+if ($unitTestExitCode -ne 0 -or $e2eTestExitCode -ne 0) {
+    Write-Error "One or more tests failed."
+    exit 1
+}
+
