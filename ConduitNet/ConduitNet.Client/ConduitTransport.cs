@@ -15,7 +15,7 @@ namespace ConduitNet.Client
     {
         private readonly ConcurrentDictionary<string, Connection> _connections = new();
 
-        public async Task<ConduitMessage> SendAsync(ConduitMessage message)
+        public virtual async Task<ConduitMessage> SendAsync(ConduitMessage message)
         {
             if (!message.Headers.TryGetValue("Target-Url", out var url))
             {

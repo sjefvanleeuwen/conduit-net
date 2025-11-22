@@ -22,6 +22,7 @@ namespace ConduitNet.Server
 
         public static IServiceCollection AddConduitServer(this IServiceCollection services)
         {
+            services.AddTransient<IConduitMessageProcessor, ConduitMessageProcessor>();
             services.AddTransient<ConduitDispatcher>();
             return services;
         }
