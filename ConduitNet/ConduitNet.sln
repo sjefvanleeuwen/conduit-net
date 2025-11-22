@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Deployer", "Cond
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Examples.AclService", "..\Examples\ConduitNet.Examples.AclService\ConduitNet.Examples.AclService.csproj", "{FD465A75-0984-4451-B539-B1CEF0BFA4DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Tests.Unit", "ConduitNet.Tests.Unit\ConduitNet.Tests.Unit.csproj", "{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +169,18 @@ Global
 		{FD465A75-0984-4451-B539-B1CEF0BFA4DF}.Release|x64.Build.0 = Release|Any CPU
 		{FD465A75-0984-4451-B539-B1CEF0BFA4DF}.Release|x86.ActiveCfg = Release|Any CPU
 		{FD465A75-0984-4451-B539-B1CEF0BFA4DF}.Release|x86.Build.0 = Release|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Debug|x64.Build.0 = Debug|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Release|x64.Build.0 = Release|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

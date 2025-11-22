@@ -1,0 +1,33 @@
+{
+    "passed":  4,
+    "timestamp":  "2025-11-22T20:47:32.8911393+01:00",
+    "failed":  0,
+    "total":  4,
+    "tests":  [
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0049008",
+                      "name":  "ConduitNet.Tests.Unit.ConduitMessageTests.Properties_ShouldBeSettable",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0019354",
+                      "name":  "ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithValidType_ShouldSetFilterType",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0084993",
+                      "name":  "ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithInvalidType_ShouldThrowArgumentException",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0019780",
+                      "name":  "ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults",
+                      "errorMessage":  null
+                  }
+              ],
+    "skipped":  0
+}

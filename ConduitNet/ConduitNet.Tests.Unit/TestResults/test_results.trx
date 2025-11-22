@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="8d4cd3d6-1da3-4903-b0e4-8d1551b282c3" name="sjefv@VOID 2025-11-22 20:36:10" runUser="VOID\sjefv" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-11-22T20:36:10.0545922+01:00" queuing="2025-11-22T20:36:10.0545927+01:00" start="2025-11-22T20:36:09.5059532+01:00" finish="2025-11-22T20:36:10.0590203+01:00" />
+  <TestSettings name="default" id="5324ece1-017d-45a0-bb82-9ba5a9723ed5">
+    <Deployment runDeploymentRoot="sjefv_VOID_2025-11-22_20_36_10" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="63f0c3f6-d41b-44a4-8211-5210359bc081" testId="20ab151c-dcd9-ed19-414e-96776c849a4b" testName="ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithValidType_ShouldSetFilterType" computerName="VOID" duration="00:00:00.0022623" startTime="2025-11-22T20:36:09.9748103+01:00" endTime="2025-11-22T20:36:09.9748106+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="63f0c3f6-d41b-44a4-8211-5210359bc081" />
+    <UnitTestResult executionId="12c0ff56-a1db-41e5-a66a-52611c0dba62" testId="403baef0-4354-04dd-8b02-e4f8bc798ddb" testName="ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithInvalidType_ShouldThrowArgumentException" computerName="VOID" duration="00:00:00.0109043" startTime="2025-11-22T20:36:09.9727046+01:00" endTime="2025-11-22T20:36:09.9727046+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="12c0ff56-a1db-41e5-a66a-52611c0dba62" />
+    <UnitTestResult executionId="69d26565-ec5e-4de0-8a37-700d6571f58e" testId="c834e017-7803-75b5-9e5b-c091be2e6ee5" testName="ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults" computerName="VOID" duration="00:00:00.0016909" startTime="2025-11-22T20:36:09.9725069+01:00" endTime="2025-11-22T20:36:09.9725070+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="69d26565-ec5e-4de0-8a37-700d6571f58e" />
+    <UnitTestResult executionId="19397f67-ce80-415d-bffd-b73bb8a65ffd" testId="6adaa700-ecbc-8c6b-a231-b9947d4a75ff" testName="ConduitNet.Tests.Unit.ConduitMessageTests.Properties_ShouldBeSettable" computerName="VOID" duration="00:00:00.0060153" startTime="2025-11-22T20:36:09.9701303+01:00" endTime="2025-11-22T20:36:09.9701562+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="19397f67-ce80-415d-bffd-b73bb8a65ffd" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="ConduitNet.Tests.Unit.ConduitMessageTests.Properties_ShouldBeSettable" storage="c:\source\conduit\conduitnet\conduitnet.tests.unit\bin\debug\net9.0\conduitnet.tests.unit.dll" id="6adaa700-ecbc-8c6b-a231-b9947d4a75ff">
+      <Execution id="19397f67-ce80-415d-bffd-b73bb8a65ffd" />
+      <TestMethod codeBase="C:\source\conduit\ConduitNet\ConduitNet.Tests.Unit\bin\Debug\net9.0\ConduitNet.Tests.Unit.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ConduitNet.Tests.Unit.ConduitMessageTests" name="Properties_ShouldBeSettable" />
+    </UnitTest>
+    <UnitTest name="ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithValidType_ShouldSetFilterType" storage="c:\source\conduit\conduitnet\conduitnet.tests.unit\bin\debug\net9.0\conduitnet.tests.unit.dll" id="20ab151c-dcd9-ed19-414e-96776c849a4b">
+      <Execution id="63f0c3f6-d41b-44a4-8211-5210359bc081" />
+      <TestMethod codeBase="C:\source\conduit\ConduitNet\ConduitNet.Tests.Unit\bin\Debug\net9.0\ConduitNet.Tests.Unit.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ConduitNet.Tests.Unit.ConduitFilterAttributeTests" name="Constructor_WithValidType_ShouldSetFilterType" />
+    </UnitTest>
+    <UnitTest name="ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithInvalidType_ShouldThrowArgumentException" storage="c:\source\conduit\conduitnet\conduitnet.tests.unit\bin\debug\net9.0\conduitnet.tests.unit.dll" id="403baef0-4354-04dd-8b02-e4f8bc798ddb">
+      <Execution id="12c0ff56-a1db-41e5-a66a-52611c0dba62" />
+      <TestMethod codeBase="C:\source\conduit\ConduitNet\ConduitNet.Tests.Unit\bin\Debug\net9.0\ConduitNet.Tests.Unit.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ConduitNet.Tests.Unit.ConduitFilterAttributeTests" name="Constructor_WithInvalidType_ShouldThrowArgumentException" />
+    </UnitTest>
+    <UnitTest name="ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults" storage="c:\source\conduit\conduitnet\conduitnet.tests.unit\bin\debug\net9.0\conduitnet.tests.unit.dll" id="c834e017-7803-75b5-9e5b-c091be2e6ee5">
+      <Execution id="69d26565-ec5e-4de0-8a37-700d6571f58e" />
+      <TestMethod codeBase="C:\source\conduit\ConduitNet\ConduitNet.Tests.Unit\bin\Debug\net9.0\ConduitNet.Tests.Unit.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="ConduitNet.Tests.Unit.ConduitMessageTests" name="Constructor_ShouldInitializeDefaults" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="20ab151c-dcd9-ed19-414e-96776c849a4b" executionId="63f0c3f6-d41b-44a4-8211-5210359bc081" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="403baef0-4354-04dd-8b02-e4f8bc798ddb" executionId="12c0ff56-a1db-41e5-a66a-52611c0dba62" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c834e017-7803-75b5-9e5b-c091be2e6ee5" executionId="69d26565-ec5e-4de0-8a37-700d6571f58e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6adaa700-ecbc-8c6b-a231-b9947d4a75ff" executionId="19397f67-ce80-415d-bffd-b73bb8a65ffd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="4" executed="4" passed="4" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.4)&#xD;
+[xUnit.net 00:00:00.06]   Discovering: ConduitNet.Tests.Unit&#xD;
+[xUnit.net 00:00:00.08]   Discovered:  ConduitNet.Tests.Unit&#xD;
+[xUnit.net 00:00:00.09]   Starting:    ConduitNet.Tests.Unit&#xD;
+[xUnit.net 00:00:00.13]   Finished:    ConduitNet.Tests.Unit&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

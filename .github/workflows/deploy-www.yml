@@ -3,8 +3,6 @@ name: Deploy WWW to GitHub Pages
 on:
   push:
     branches: ["main"]
-    paths:
-      - "www/**"
   workflow_dispatch:
 
 permissions:
@@ -23,6 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -34,9 +37,9 @@ jobs:
         working-directory: ./www
         run: npm ci
 
-      - name: Build
-        working-directory: ./www
-        run: npm run build
+      - name: Build and Test
+        shell: pwsh
+        run: ./build-and-test.ps1
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

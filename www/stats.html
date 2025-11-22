@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>ConduitNet - Test Statistics</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<script type="module" src="/src/stats.ts"></script>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<h1 id="logo"><a href="index.html">ConduitNet</a></h1>
+					<nav id="nav">
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="blog.html">Blog</a></li>
+							<li><a href="stats.html">Stats</a></li>
+						</ul>
+					</nav>
+				</header>
+
+            <!-- Hero -->
+                <conduit-hero 
+                    title="System Status & Test Statistics" 
+                    subtitle="Live build verification results from the latest deployment."
+                    background-image="images/background9.png"
+                ></conduit-hero>
+
+			<!-- Main -->
+				<div id="main" class="wrapper style1">
+					<div class="container">
+						<!-- Stats Overview -->
+						<div class="row gtr-150">
+							<div class="col-4 col-12-medium">
+								<section class="box">
+									<header>
+										<h3>Total Tests</h3>
+									</header>
+									<h2 id="total-tests">-</h2>
+								</section>
+							</div>
+							<div class="col-4 col-12-medium">
+								<section class="box">
+									<header>
+										<h3>Passed</h3>
+									</header>
+									<h2 id="passed-tests" style="color: #39c088">-</h2>
+								</section>
+							</div>
+							<div class="col-4 col-12-medium">
+								<section class="box">
+									<header>
+										<h3>Failed</h3>
+									</header>
+									<h2 id="failed-tests" style="color: #e44c65">-</h2>
+								</section>
+							</div>
+						</div>
+
+						<hr />
+
+						<!-- Detailed Test List -->
+						<section>
+							<h3>Test Details</h3>
+                            <div id="test-list" class="table-wrapper">
+                                <p>Loading detailed results...</p>
+                            </div>
+						</section>
+                        
+                        <p style="text-align: center; margin-top: 2em; font-size: 0.8em; opacity: 0.7;">
+                            Generated at: <span id="generated-at">-</span>
+                        </p>
+
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; ConduitNet. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</footer>
+
+		</div>
+	</body>
+</html>
