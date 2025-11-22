@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Blog - ConduitNet</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<script type="module" src="/src/blog.ts"></script>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<h1 id="logo"><a href="index.html">ConduitNet</a></h1>
+					<nav id="nav">
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="blog.html">Blog</a></li>
+						</ul>
+					</nav>
+				</header>
+
+			<!-- Blog Banner -->
+				<section id="blog-banner">
+					<div class="content">
+						<header>
+							<h2>ConduitNet Architecture</h2>
+							<p>A deep dive into the invisible fabric connecting your services.</p>
+						</header>
+					</div>
+				</section>
+
+			<!-- Main -->
+				<div id="main" class="wrapper style1">
+					<div class="container">
+
+						<!-- Content -->
+							<section id="content">
+                                <p>ConduitNet is designed to be invisible. It sits between your service interface and the network, translating method calls into efficient binary messages. Unlike traditional RPC frameworks that require heavy configuration or sidecars, ConduitNet uses <code>DispatchProxy</code> to intercept calls at runtime.</p>
+                                
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <h3>The Core Concept</h3>
+                                        <p>At its heart, ConduitNet is about removing friction. You define your service as a standard .NET interface. On the client side, we generate a proxy that looks and feels like a local implementation. When you call a method, the proxy intercepts it, serializes the arguments, and ships them off to the correct server node.</p>
+                                        <p>This happens transparently. Your application code doesn't know—and shouldn't care—that the service is running on a different machine, or even a different continent.</p>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+graph TD
+    Client[Client App] -->|Interface Call| Proxy[Conduit Proxy]
+    Proxy -->|Serialize| Transport[Transport Layer]
+    Transport -->|Network| Server[Server Node]
+    Server -->|Deserialize| Dispatcher[Conduit Dispatcher]
+    Dispatcher -->|Execute| Service[Actual Service]
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant P as Proxy
+    participant N as Network
+    participant S as Server
+    C->>P: Call Method(Args)
+    P->>P: Serialize (MessagePack)
+    P->>N: Send (PipeWriter)
+    N->>S: Receive (PipeReader)
+    S->>S: Deserialize
+    S->>S: Execute Method
+    S-->>N: Return Result
+    N-->>P: Receive Result
+    P-->>C: Return Value
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <h3>Zero-Copy Performance</h3>
+                                        <p>Performance is paramount. We use <code>System.IO.Pipelines</code> to handle network streams without unnecessary memory allocation. Messages are serialized using <code>MessagePack</code>, ensuring a compact wire format.</p>
+                                        <p>This combination allows ConduitNet to achieve throughput comparable to raw socket connections. By avoiding the overhead of HTTP/2 headers and JSON serialization found in gRPC or REST, we keep the "tax" on your distributed calls to an absolute minimum.</p>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <h3>Dynamic Topology</h3>
+                                        <p>In a distributed environment, nodes come and go. ConduitNet uses a leader-based topology to manage cluster state. New nodes connect to any peer, which redirects them to the leader. The leader then broadcasts the updated topology to all nodes, ensuring every client knows exactly where to send requests.</p>
+                                        <p>This eliminates the need for external service discovery tools like Consul or Etcd. The cluster manages itself, healing and rebalancing as nodes join or leave.</p>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+graph TD
+    Client[Client] -->|Connects| NodeA[Node A Follower]
+    NodeA -.->|Redirects| NodeB[Node B Leader]
+    NodeB -->|Updates Topology| NodeA
+    NodeB -->|Updates Topology| NodeC[Node C Follower]
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <h3>The Filter Pipeline</h3>
+                                        <p>Just like ASP.NET Core middleware, ConduitNet uses a pipeline of filters to process requests. The <code>IConduitFilter</code> interface allows you to intercept messages before they are sent or after they are received. This is perfect for logging, authentication, or even routing logic.</p>
+                                        <p>Filters are applied in order. A request passes through all pre-send filters on the client, travels over the network, and then passes through pre-dispatch filters on the server.</p>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+graph TD
+    Request[Request] --> Filter1[Log Filter]
+    Filter1 --> Filter2[Auth Filter]
+    Filter2 --> Filter3[Routing Filter]
+    Filter3 --> Transport[Transport Layer]
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+graph TD
+    Socket[WebSocket] -->|Bytes| Pipe[System.IO.Pipelines]
+    Pipe -->|Frames| Transport[ConduitTransport]
+    Transport -->|Messages| Dispatcher[Dispatcher]
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <h3>The Transport Layer</h3>
+                                        <p>The <code>ConduitTransport</code> class is the workhorse of the system. It manages the WebSocket connection, handling the raw byte streams with <code>System.IO.Pipelines</code>. It ensures that messages are framed correctly and delivered in order.</p>
+                                        <p>By abstracting the underlying connection, ConduitNet can easily be extended to support other protocols like TCP or QUIC in the future, while keeping the upper layers unchanged.</p>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <h3>The Server Stack</h3>
+                                        <p>On the server side, the <code>ConduitWebSocketMiddleware</code> accepts incoming connections. It hands off the stream to the <code>ConduitDispatcher</code>, which deserializes the message, locates the target service, and invokes the method using fast reflection.</p>
+                                        <p>This separation of concerns allows ConduitNet to be hosted in any ASP.NET Core application, sharing the same port and Kestrel server as your HTTP API.</p>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+graph TD
+    Req[Incoming Request] --> Middleware[WebSocket Middleware]
+    Middleware --> Dispatcher[Conduit Dispatcher]
+    Dispatcher -->|Resolve| Service[Service Implementation]
+    Service -->|Result| Dispatcher
+    Dispatcher -->|Response| Middleware
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-6 col-12-medium">
+                                        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Follower
+    Follower --> Candidate: Timeout
+    Candidate --> Leader: Votes > 50%
+    Candidate --> Follower: Leader Found
+    Leader --> Follower: Higher Term Seen
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-12-medium">
+                                        <h3>Node Architecture</h3>
+                                        <p>Every node in a ConduitNet cluster is capable of being a leader or a follower. The <code>ConduitNode</code> class encapsulates this logic, managing the state machine that keeps the cluster in sync. It uses a specialized <code>DirectoryNode</code> to maintain the registry of available services.</p>
+                                        <p>This symmetric architecture means you can scale out simply by adding more nodes. There are no special "master" nodes to provision or manage.</p>
+                                    </div>
+                                </div>
+
+							</section>
+
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<conduit-footer></conduit-footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/jquery.scrolly.min.js"></script>
+			<script src="/js/jquery.dropotron.min.js"></script>
+			<script src="/js/jquery.scrollex.min.js"></script>
+			<script src="/js/browser.min.js"></script>
+			<script src="/js/breakpoints.min.js"></script>
+			<script src="/js/util.js"></script>
+			<script src="/js/main.js"></script>
+
+	</body>
+</html>

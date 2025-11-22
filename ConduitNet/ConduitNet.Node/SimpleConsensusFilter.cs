@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using ConduitNet.Core;
 using Microsoft.Extensions.Configuration;
 
-namespace Api2
+namespace ConduitNet.Node
 {
     public class SimpleConsensusFilter : IConduitFilter
     {

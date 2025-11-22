@@ -181,6 +181,7 @@
 		font-weight: _font(weight-bold);
 		line-height: 1em;
 		margin: 0 0 (_size(element-margin) * 0.5) 0;
+		letter-spacing: 0.1em;
 
 		a {
 			color: inherit;
@@ -191,7 +192,6 @@
 	h2 {
 		font-size: 2em;
 		line-height: 1.5em;
-		letter-spacing: -0.025em;
 	}
 
 	h3 {
@@ -1467,7 +1467,6 @@
 	}
 
 	#header {
-		display: none;
 		background: _palette(accent2-transparent);
 		box-shadow: 0 0 0.25em 0 rgba(0,0,0,0.25);
 		cursor: default;
@@ -1593,7 +1592,8 @@
 				vertical-align: middle;
 
 				h2 {
-					font-size: 2.5em;
+					font-size: 3.25em;
+					letter-spacing: 0.25em;
 					margin: 0;
 				}
 
@@ -1623,8 +1623,59 @@
 		}
 	}
 
+	#blog-banner {
+		background-attachment: fixed;
+		background-color: _palette(accent2);
+		background-image: url('/images/background6.png');
+		background-position: center center;
+		background-size: cover;
+		box-shadow: 0 0.25em 0.5em 0 rgba(0,0,0,0.25);
+		min-height: 20em;
+		position: relative;
+		text-align: center;
+		z-index: (_misc(max-spotlight) + 1);
+		padding: 6em 0;
+
+		&:after {
+			@include vendor('background-image', ('linear-gradient(to bottom, rgba(23,24,32,0.35), rgba(23,24,32,0.35))', 'url("/images/overlay.png")'));
+			content: '';
+			display: block;
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+		}
+
+		.content {
+			display: inline-block;
+			max-width: 95%;
+			position: relative;
+			z-index: 1;
+
+			header {
+				display: inline-block;
+				vertical-align: middle;
+
+				h2 {
+					font-size: 2.5em;
+					letter-spacing: 0.25em;
+					margin: 0;
+					color: #ffffff;
+				}
+
+				p {
+					margin: (_size(element-margin) * 0.5) 0 0 0;
+					top: 0;
+					color: rgba(255, 255, 255, 0.85);
+					font-size: 1.2em;
+				}
+			}
+		}
+	}
+
 	body.is-touch {
-		#banner {
+		#banner, #blog-banner {
 			background-attachment: scroll;
 		}
 	}

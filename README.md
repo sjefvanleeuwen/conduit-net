@@ -54,13 +54,13 @@ graph TD
 
 1. **Start the Directory**:
    ```bash
-   cd ConduitNet/Api1
+   cd Examples/ConduitNet.Examples.Directory
    dotnet run --urls http://localhost:5000
    ```
 
 2. **Start a Service Node**:
    ```bash
-   cd ConduitNet/Api2
+   cd Examples/ConduitNet.Examples.UserService
    dotnet run --urls http://localhost:5001
    ```
 

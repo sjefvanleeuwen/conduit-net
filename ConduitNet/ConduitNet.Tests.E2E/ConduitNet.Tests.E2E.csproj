@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Api1\Api1.csproj" />
-    <ProjectReference Include="..\Api2\Api2.csproj" />
+    <ProjectReference Include="..\..\Examples\ConduitNet.Examples.Directory\ConduitNet.Examples.Directory.csproj" />
+    <ProjectReference Include="..\..\Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj" />
   </ItemGroup>
 
 </Project>

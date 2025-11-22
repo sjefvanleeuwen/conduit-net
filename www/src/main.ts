@@ -1,4 +1,5 @@
 import './styles/main.scss';
+import './components/conduit-footer/conduit-footer';
 
 console.log('ConduitNet Website Loaded');
 

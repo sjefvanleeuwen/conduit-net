@@ -1,4 +1,4 @@
-using Api2;
+using ConduitNet.Examples.UserService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;

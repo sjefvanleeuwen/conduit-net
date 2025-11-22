@@ -24,8 +24,8 @@ namespace ConduitNet.Tests.E2E
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var solutionDir = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", ".."));
             
-            var api1Path = Path.Combine(solutionDir, "Api1", "bin", "Debug", "net9.0", "Api1.exe");
-            var api2Path = Path.Combine(solutionDir, "Api2", "bin", "Debug", "net9.0", "Api2.exe");
+            var api1Path = Path.Combine(solutionDir, "..", "Examples", "ConduitNet.Examples.Directory", "bin", "Debug", "net9.0", "ConduitNet.Examples.Directory.exe");
+            var api2Path = Path.Combine(solutionDir, "..", "Examples", "ConduitNet.Examples.UserService", "bin", "Debug", "net9.0", "ConduitNet.Examples.UserService.exe");
 
             if (!File.Exists(api1Path)) throw new FileNotFoundException($"Api1 not found at {api1Path}");
             if (!File.Exists(api2Path)) throw new FileNotFoundException($"Api2 not found at {api2Path}");

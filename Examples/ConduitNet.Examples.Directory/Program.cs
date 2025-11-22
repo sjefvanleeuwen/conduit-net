@@ -45,8 +45,8 @@ public class MyBusinessLogic
 
     public async Task DoWorkAsync()
     {
-        var user = new UserDto { Name = "DirectoryAdmin", Email = "admin@conduit.net" };
-        await _userService.SaveUserAsync(user);
+        var user = new UserDto { Name = "DirectoryAdmin", Email = "admin@conduit.net", Username = "admin" };
+        await _userService.RegisterUserAsync(user);
     }
 }
 
