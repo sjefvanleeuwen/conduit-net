@@ -26,6 +26,38 @@
 		<meta property="twitter:description" content="End-to-end visibility into your distributed fabric with zero external dependencies in the core." />
 		<meta property="twitter:image" content="https://conduitnet.com/images/conduit.png" />
 
+        <!-- Syntax Highlighting (Prism) -->
+        <link href="https://unpkg.com/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css" rel="stylesheet" />
+        <style>
+            /* Force VS Code Dark Background */
+            pre[class*="language-"], code[class*="language-"] {
+                background-color: #1e1e1e !important;
+                background-image: none !important;
+                color: #d4d4d4 !important;
+                text-shadow: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                font-family: Consolas, 'Courier New', monospace !important;
+                font-size: 14px !important;
+                /* Responsive wrapping */
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+            }
+            
+            /* Adjust Line Numbers to match VS Code */
+            .line-numbers .line-numbers-rows {
+                border-right: 1px solid #404040 !important;
+            }
+        </style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+        
+        <!-- Mermaid Diagrams -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true, theme: 'dark'});</script>
+
 		<script type="module" src="/src/telemetry.ts"></script>
 	</head>
 	<body class="is-preload">
@@ -48,106 +80,128 @@
                 <conduit-hero 
                     background-image="images/background10.png"
                     title="Distributed Observability" 
-                    subtitle="Tracing requests across the wire with System.Diagnostics.Activity"
+                    subtitle="Everything is a Node: Native Telemetry Collection"
                 ></conduit-hero>
 
 			<!-- Main Content -->
 				<div id="main" class="wrapper style1">
 					<div class="container">
 						<header class="major">
-							<h2>The Black Box Problem</h2>
-							<p>In distributed systems, knowing <em>that</em> a request failed is easy. Knowing <em>where</em> and <em>why</em> is hard.</p>
+							<h2>The "Everything is a Node" Philosophy</h2>
+							<p>In ConduitNet, telemetry isn't a sidecar or a magical agent. It's just another service. The <strong>Telemetry Node</strong> is a first-class citizen in the mesh, receiving traces via standard Conduit RPC calls.</p>
 						</header>
 
 						<!-- Content -->
 							<section>
-								<h3>Native Tracing Support</h3>
-								<p>ConduitNet 0.2 introduces native support for distributed tracing without taking a hard dependency on OpenTelemetry libraries in the core. Instead, we leverage the powerful <code>System.Diagnostics.Activity</code> API built into .NET.</p>
-								<p>This allows ConduitNet to be lightweight while still being fully compatible with the OpenTelemetry ecosystem (Jaeger, Zipkin, Prometheus, etc.).</p>
+								<h3>Architecture Overview</h3>
+								<p>Instead of pushing data to an external HTTP endpoint directly, services in the mesh export their traces to a dedicated <code>ITelemetryCollector</code> service. This service runs on a standard Conduit Node.</p>
+                                
+                                <div class="mermaid">
+                                    graph TD
+                                    subgraph "Conduit Mesh"
+                                        Dir[Directory Service]
+                                        
+                                        subgraph "User Node"
+                                            US[User Service]
+                                            Exp[Conduit Trace Exporter]
+                                        end
+                                        
+                                        subgraph "Telemetry Node"
+                                            TC[Telemetry Collector]
+                                        end
+                                        
+                                        US -->|1. Register| Dir
+                                        TC -->|1. Register| Dir
+                                        
+                                        US -- "2. RPC: GetUser" --> US
+                                        Exp -- "3. RPC: ExportBatch" --> TC
+                                    end
+                                    
+                                    TC -->|4. Forward| OTLP[OpenTelemetry Collector / Jaeger]
+                                </div>
 
                                 <hr />
 
-                                <h3>How It Works</h3>
-                                <p>The telemetry pipeline is built directly into the <code>ConduitPipelineExecutor</code> (Client) and <code>ConduitMessageProcessor</code> (Server).</p>
+                                <h3>1. The Telemetry Node</h3>
+                                <p>The Telemetry Node is a standard Conduit application. It implements the <code>ITelemetryCollector</code> contract. This demonstrates the power of the "Everything is a Node" architecture: infrastructure concerns are implemented using the same primitives as business logic.</p>
 
-                                <h4>1. The Activity Source</h4>
-                                <p>We define a central <code>ActivitySource</code> named <strong>"ConduitNet"</strong>. All traces generated by the framework originate from this source.</p>
-                                <pre><code>internal static class ConduitTelemetry
+                                <pre class="line-numbers"><code class="language-csharp">using ConduitNet.Node;
+using ConduitNet.Contracts;
+
+namespace ConduitNet.Telemetry.Node
 {
-    public static readonly ActivitySource ActivitySource = new("ConduitNet", "1.0.0");
-}</code></pre>
-
-                                <h4>2. W3C Trace Context Propagation</h4>
-                                <p>Since ConduitNet uses a custom WebSocket transport, we manually propagate the W3C Trace Context headers (<code>traceparent</code> and <code>tracestate</code>). This ensures that a trace started on the Client continues seamlessly on the Server.</p>
-                                
-                                <div class="row">
-                                    <div class="col-6 col-12-medium">
-                                        <h4>Client Side</h4>
-                                        <p>Before sending a message, the client starts an Activity and injects the current context into the message headers.</p>
-                                        <pre><code>// ConduitPipelineExecutor.cs
-using var activity = ConduitTelemetry.ActivitySource.StartActivity(
-    "ConduitClient.Execute", 
-    ActivityKind.Client
-);
-
-// Inject W3C headers
-if (activity != null)
-{
-    message.Headers["traceparent"] = activity.Id;
-    if (activity.TraceStateString != null)
+    public class TelemetryNode : ConduitNode
     {
-        message.Headers["tracestate"] = activity.TraceStateString;
+        public TelemetryNode(string[] args) : base(args) { }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            // Register the Telemetry Collector Service implementation
+            // This makes it discoverable by the Directory
+            RegisterConduitService&lt;ITelemetryCollector, TelemetryCollectorService&gt;();
+        }
+
+        protected override void Configure(WebApplication app)
+        {
+            // Expose the Conduit RPC endpoint over WebSockets
+            app.MapConduitService&lt;ITelemetryCollector&gt;();
+        }
     }
 }</code></pre>
-                                    </div>
-                                    <div class="col-6 col-12-medium">
-                                        <h4>Server Side</h4>
-                                        <p>The server extracts these headers and starts a linked Activity, preserving the distributed trace.</p>
-                                        <pre><code>// ConduitMessageProcessor.cs
-// Extract parent context
-if (message.Headers.TryGetValue("traceparent", out var traceParent))
+
+                                <h3>2. The Collector Service Implementation</h3>
+                                <p>The service implementation receives batches of traces. It can then process them, log them, or forward them to an external system like Jaeger or Honeycomb.</p>
+
+                                <pre class="line-numbers"><code class="language-csharp">public class TelemetryCollectorService : ITelemetryCollector
 {
-    // Start activity with parent context
-    using var activity = ConduitTelemetry.ActivitySource.StartActivity(
-        "ConduitServer.Process",
-        ActivityKind.Server,
-        traceParent
-    );
-    // ... process message
+    public Task ExportBatchAsync(List&lt;ActivityExportDto&gt; batch)
+    {
+        Console.WriteLine($"[TelemetryCollector] Received batch of {batch.Count} spans");
+        
+        foreach (var span in batch)
+        {
+            Console.WriteLine($" - Trace: {span.TraceId} | Span: {span.SpanId} | Name: {span.DisplayName}");
+        }
+        
+        return Task.CompletedTask;
+    }
 }</code></pre>
-                                    </div>
-                                </div>
 
                                 <hr />
 
-                                <h3>Visualizing the Data</h3>
-                                <p>Because we use standard .NET APIs, you can visualize traces using any OpenTelemetry-compatible tool. Here is an example of a trace visualized in the console, showing the flow from Client to Gateway to Leader Node.</p>
+                                <h3>3. Configuring Services to Emit Telemetry</h3>
+                                <p>Any service in the mesh can be configured to send its traces to the Telemetry Node. We provide a custom <code>ConduitTraceExporter</code> that adapts OpenTelemetry's export pipeline to Conduit's RPC mechanism.</p>
 
-                                <div class="box">
-                                    <pre><code>Activity.TraceId:            f8ef93234839f4c96ac79e2a48a3ae49
-Activity.SpanId:             e8293265d46543e3
-Activity.DisplayName:        ConduitClient.Execute
-Activity.Kind:               Client
-    |
-    +--- Activity.DisplayName: Filter: LeaderRoutingFilter
-         Activity.Kind:        Internal
-         |
-         +--- (Network Call to Gateway)
-              |
-              +--- Activity.DisplayName: ConduitServer.Process
-                   Activity.Kind:        Server
-                   Activity.SpanId:      11ef2ef0f3ca7e3c</code></pre>
-                                </div>
+                                <pre class="line-numbers"><code class="language-csharp">// In your Service's ConfigureServices method
+protected override void ConfigureServices(IServiceCollection services)
+{
+    // 1. Register the Client for the Telemetry Collector
+    // This allows this node to talk to the Telemetry Node via the Directory
+    services.AddConduitClient&lt;ITelemetryCollector&gt;();
 
-                                <h3>Enabling Telemetry</h3>
-                                <p>To enable telemetry in your ConduitNet application, simply add the OpenTelemetry SDK and subscribe to the "ConduitNet" source.</p>
-                                <pre><code>builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder =>
-    {
-        tracerProviderBuilder
-            .AddSource("ConduitNet") // &lt;-- Subscribe to ConduitNet traces
-            .AddConsoleExporter();   // Or AddOtlpExporter() for Jaeger/Aspire
-    });</code></pre>
+    // 2. Configure OpenTelemetry
+    services.AddOpenTelemetry()
+        .WithTracing(builder => builder
+            .AddSource("ConduitNet") // Capture internal framework traces
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("MyService"))
+            .AddProcessor(sp => 
+            {
+                // Resolve the RPC Client
+                var collector = sp.GetRequiredService&lt;ITelemetryCollector&gt;();
+                
+                // Use the Batch Processor with our Custom RPC Exporter
+                return new BatchActivityExportProcessor(
+                    new ConduitTraceExporter(collector, "MyService")
+                );
+            }));
+}</code></pre>
+
+                                <h3>Why This Matters</h3>
+                                <ul>
+                                    <li><strong>Protocol Homogeneity:</strong> You don't need to open extra HTTP ports or manage sidecars for telemetry. It travels over the same WebSocket fabric as your application traffic.</li>
+                                    <li><strong>Dynamic Discovery:</strong> If you move the Telemetry Node to a different server, the Directory automatically updates all services. No config changes required.</li>
+                                    <li><strong>Resilience:</strong> Since it uses the standard Conduit Client, telemetry export benefits from the same retry policies, load balancing, and circuit breaking as your business logic.</li>
+                                </ul>
 
 							</section>
 
