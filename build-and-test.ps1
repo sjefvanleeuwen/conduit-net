@@ -47,12 +47,22 @@ $passed = ($tests | Where-Object { $_.outcome -eq 'Passed' }).Count
 $failed = ($tests | Where-Object { $_.outcome -eq 'Failed' }).Count
 $skipped = ($tests | Where-Object { $_.outcome -eq 'NotExecuted' -or $_.outcome -eq 'Skipped' }).Count
 
+# Capture Build Info
+$buildInfo = @{
+    runNumber = if ($env:GITHUB_RUN_NUMBER) { $env:GITHUB_RUN_NUMBER } else { "Local" }
+    commitHash = if ($env:GITHUB_SHA) { $env:GITHUB_SHA.Substring(0, 7) } else { "N/A" }
+    branch = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "local" }
+    actor = if ($env:GITHUB_ACTOR) { $env:GITHUB_ACTOR } else { $env:USERNAME }
+    workflow = if ($env:GITHUB_WORKFLOW) { $env:GITHUB_WORKFLOW } else { "Manual Run" }
+}
+
 $json = @{
     total = $total
     passed = $passed
     failed = $failed
     skipped = $skipped
     timestamp = (Get-Date).ToString("o")
+    buildInfo = $buildInfo
     tests = $tests
 } | ConvertTo-Json -Depth 10
 

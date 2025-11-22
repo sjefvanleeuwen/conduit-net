@@ -10,12 +10,21 @@ interface TestDetail {
     errorMessage?: string;
 }
 
+interface BuildInfo {
+    runNumber: string;
+    commitHash: string;
+    branch: string;
+    actor: string;
+    workflow: string;
+}
+
 interface TestResults {
     total: number;
     passed: number;
     failed: number;
     skipped: number;
     timestamp: string;
+    buildInfo?: BuildInfo;
     tests: TestDetail[];
 }
 
@@ -63,6 +72,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Update Timestamp
         document.getElementById('generated-at')!.innerText = new Date(data.timestamp).toLocaleString();
+
+        // Render Build Info
+        if (data.buildInfo) {
+            const buildInfoContainer = document.getElementById('build-info');
+            if (buildInfoContainer) {
+                buildInfoContainer.innerHTML = `
+                    <header class="major">
+                        <h2>Build Information</h2>
+                    </header>
+                    <div class="row">
+                        <div class="col-3 col-6-medium col-12-small">
+                            <section class="box" style="text-align: center;">
+                                <header><h3>Run</h3></header>
+                                <p>#${data.buildInfo.runNumber}</p>
+                            </section>
+                        </div>
+                        <div class="col-3 col-6-medium col-12-small">
+                            <section class="box" style="text-align: center;">
+                                <header><h3>Commit</h3></header>
+                                <p>${data.buildInfo.commitHash}</p>
+                            </section>
+                        </div>
+                        <div class="col-3 col-6-medium col-12-small">
+                            <section class="box" style="text-align: center;">
+                                <header><h3>Branch</h3></header>
+                                <p>${data.buildInfo.branch}</p>
+                            </section>
+                        </div>
+                        <div class="col-3 col-6-medium col-12-small">
+                            <section class="box" style="text-align: center;">
+                                <header><h3>Actor</h3></header>
+                                <p>${data.buildInfo.actor}</p>
+                            </section>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
         // Render Test List
         const listContainer = document.getElementById('test-list');

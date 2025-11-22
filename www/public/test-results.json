@@ -1,129 +1,136 @@
 {
     "passed":  20,
-    "timestamp":  "2025-11-22T21:37:34.6306079+01:00",
+    "timestamp":  "2025-11-22T21:44:57.4749874+01:00",
     "failed":  0,
     "total":  20,
     "tests":  [
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0029297",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithValidType_ShouldSetFilterType",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0493467",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitPipelineExecutorTests.ExecuteAsync_ShouldExecuteFiltersInOrder",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0276501",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitProxyTests.Invoke_ShouldThrowException_WhenResponseIsError",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0004973",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.RegisterAsync_ShouldHandleMultipleServicesForOneNode",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0051169",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitPipelineExecutorTests.ExecuteAsync_ShouldCallTransport_WhenNoFiltersArePresent",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0042403",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitProxyTests.Invoke_ShouldSerializeArgumentsAndCallSendFunc",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0004957",
+                      "duration":  "00:00:00.0002885",
                       "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.DiscoverAsync_ShouldReturnEmptyList_WhenServiceNotFound",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0017803",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults",
+                      "duration":  "00:00:00.0048312",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitProxyTests.Invoke_ShouldSerializeArgumentsAndCallSendFunc",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0058722",
+                      "duration":  "00:00:00.1949973",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithValidType_ShouldSetFilterType",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.2078854",
                       "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageTests.Properties_ShouldBeSettable",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0011416",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitProxyTests.Invoke_ShouldHandleVoidTask",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0093790",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithInvalidType_ShouldThrowArgumentException",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0055708",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.RegisterAsync_ShouldUpdateExistingNode",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0194827",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldInvokeServiceMethod_AndReturnResult",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0438662",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldReturnError_WhenMethodNotFound",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0020274",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldExecuteFilters",
-                      "errorMessage":  null
-                  },
-                  {
-                      "outcome":  "Passed",
-                      "duration":  "00:00:00.0019540",
+                      "duration":  "00:00:00.0022659",
                       "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldInvokeAsyncMethod_AndReturnResult",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0005777",
-                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.RegisterAsync_ShouldAddNodeToRegistry",
+                      "duration":  "00:00:00.0010659",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageTests.Constructor_ShouldInitializeDefaults",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0017258",
+                      "duration":  "00:00:00.3620354",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldReturnError_WhenMethodNotFound",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0018154",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldExecuteFilters",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0169032",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitMessageProcessorTests.ProcessAsync_ShouldInvokeServiceMethod_AndReturnResult",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0054472",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitPipelineExecutorTests.ExecuteAsync_ShouldCallTransport_WhenNoFiltersArePresent",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.2276094",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitProxyTests.Invoke_ShouldThrowException_WhenResponseIsError",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.2094336",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.RegisterAsync_ShouldUpdateExistingNode",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0009304",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitProxyTests.Invoke_ShouldHandleVoidTask",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.2499284",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitPipelineExecutorTests.ExecuteAsync_ShouldExecuteFiltersInOrder",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0103648",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitFilterAttributeTests.Constructor_WithInvalidType_ShouldThrowArgumentException",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0016380",
                       "name":  "Unit - ConduitNet.Tests.Unit.ConduitPipelineExecutorTests.ExecuteAsync_ShouldAllowFilterToShortCircuit",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:05.0691550",
+                      "duration":  "00:00:00.0003172",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.RegisterAsync_ShouldAddNodeToRegistry",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:00.0005065",
+                      "name":  "Unit - ConduitNet.Tests.Unit.ConduitDirectoryServiceTests.RegisterAsync_ShouldHandleMultipleServicesForOneNode",
+                      "errorMessage":  null
+                  },
+                  {
+                      "outcome":  "Passed",
+                      "duration":  "00:00:05.0683007",
                       "name":  "E2E - ConduitNet.Tests.E2E.ConsensusRoutingTests.Gateway_Should_Learn_Leader_And_Redirect",
                       "errorMessage":  null
                   },
                   {
                       "outcome":  "Passed",
-                      "duration":  "00:00:00.0022730",
+                      "duration":  "00:00:00.0022454",
                       "name":  "E2E - ConduitNet.Tests.E2E.UnitTest1.Test1",
                       "errorMessage":  null
                   }
               ],
-    "skipped":  0
+    "skipped":  0,
+    "buildInfo":  {
+                      "branch":  "local",
+                      "actor":  "sjefv",
+                      "runNumber":  "Local",
+                      "commitHash":  "N/A",
+                      "workflow":  "Manual Run"
+                  }
 }
