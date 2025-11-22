@@ -10,9 +10,12 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0",
     "sass": "^1.69.0",
-    "turbo": "^1.10.0"
+    "turbo": "^1.10.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "mermaid": "^11.12.1"
   }
 }
