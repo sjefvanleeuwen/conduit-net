@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;
 using ConduitNet.Client;
 using ConduitNet.Node;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+using ConduitNet.Core;
 
 new MyDirectoryNode(args).Run();
 
@@ -19,7 +23,22 @@ public class MyDirectoryNode : DirectoryNode
         
         // Register Client for IUserService (so we can test calling Api2)
         services.AddConduitClient<IUserService>();
+        services.AddConduitClient<ITelemetryCollector>();
         services.AddTransient<MyBusinessLogic>();
+
+        // Configure OpenTelemetry
+        services.AddOpenTelemetry()
+            .WithTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("DirectoryService"))
+                    .AddSource(ConduitTelemetry.Source.Name)
+                    .AddConsoleExporter()
+                    .AddProcessor(sp => {
+                        var collector = sp.GetRequiredService<ITelemetryCollector>();
+                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "DirectoryService"));
+                    });
+            });
     }
 
     protected override void Configure(WebApplication app)

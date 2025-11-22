@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using ConduitNet.Core;
 
@@ -18,7 +19,21 @@ namespace ConduitNet.Client
 
         public async Task<ConduitMessage> ExecuteAsync(ConduitMessage message)
         {
-            ConduitDelegate pipeline = msg => new ValueTask<ConduitMessage>(_transport.SendAsync(msg));
+            using var activity = ConduitTelemetry.Source.StartActivity("ConduitClient.Execute");
+
+            ConduitDelegate pipeline = async msg => 
+            {
+                // Inject propagation headers
+                if (Activity.Current?.Id != null)
+                {
+                    msg.Headers["traceparent"] = Activity.Current.Id;
+                    if (Activity.Current.TraceStateString != null)
+                    {
+                        msg.Headers["tracestate"] = Activity.Current.TraceStateString;
+                    }
+                }
+                return await _transport.SendAsync(msg);
+            };
 
             // Build pipeline in reverse order
             var filtersList = new List<IConduitFilter>(_filters);
@@ -27,7 +42,11 @@ namespace ConduitNet.Client
             foreach (var filter in filtersList)
             {
                 var next = pipeline;
-                pipeline = msg => filter.InvokeAsync(msg, next);
+                pipeline = async msg => 
+                {
+                    using var filterActivity = ConduitTelemetry.Source.StartActivity($"Filter: {filter.GetType().Name}");
+                    return await filter.InvokeAsync(msg, next);
+                };
             }
 
             return await pipeline(message);

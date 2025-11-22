@@ -4,6 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;
 using ConduitNet.Server;
 using ConduitNet.Node;
+using ConduitNet.Client;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+using ConduitNet.Core;
 
 new UserNode(args).Run();
 
@@ -14,6 +19,24 @@ public class UserNode : ConduitNode
     protected override void ConfigureServices(IServiceCollection services)
     {
         RegisterConduitService<IUserService, UserService>();
+        
+        // Register Telemetry Collector Client
+        services.AddConduitClient<ITelemetryCollector>();
+
+        // Configure OpenTelemetry
+        services.AddOpenTelemetry()
+            .WithTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("UserService"))
+                    .AddSource(ConduitTelemetry.Source.Name)
+                    .AddConsoleExporter()
+                    .AddProcessor(sp => 
+                    {
+                        var collector = sp.GetRequiredService<ITelemetryCollector>();
+                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "UserService"));
+                    });
+            });
     }
 
     protected override void Configure(WebApplication app)

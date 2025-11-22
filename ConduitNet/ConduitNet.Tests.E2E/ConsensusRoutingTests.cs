@@ -4,6 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using System.IO;
+using ConduitNet.Client;
+using ConduitNet.Contracts;
+using ConduitNet.Core;
+using System.Collections.Generic;
 
 namespace ConduitNet.Tests.E2E
 {
@@ -39,7 +43,48 @@ namespace ConduitNet.Tests.E2E
 
             // Give them time to start up
             await Task.Delay(5000);
-// ...existing code...
+
+            try
+            {
+                // 4. Create Client connecting to Node A (Follower)
+                var transport = new ConduitTransport();
+                
+                var filters = new List<IConduitFilter>
+                {
+                    new FixedTargetFilter("ws://localhost:5002/conduit"),
+                    new LeaderRoutingFilter()
+                };
+                var executor = new ConduitPipelineExecutor(transport, filters);
+
+                var proxy = System.Reflection.DispatchProxy.Create<IUserService, ConduitProxy<IUserService>>();
+                ((ConduitProxy<IUserService>)(object)proxy).Initialize(executor.ExecuteAsync);
+
+                // 5. Call Service
+                // This should be routed from Node A -> Node B (Leader)
+                var newUser = new UserDto { Username = "telemetry_user", Email = "trace@example.com" };
+                var created = await proxy.RegisterUserAsync(newUser);
+                Assert.NotNull(created);
+
+                var user = await proxy.GetUserAsync(created.Id);
+                Assert.NotNull(user);
+            }
+            finally
+            {
+                Console.WriteLine("=== SERVER LOGS ===");
+                Console.WriteLine(_logs.ToString());
+                Console.WriteLine("===================");
+            }
+        }
+
+        private class FixedTargetFilter : IConduitFilter
+        {
+            private readonly string _url;
+            public FixedTargetFilter(string url) => _url = url;
+            public ValueTask<ConduitMessage> InvokeAsync(ConduitMessage message, ConduitDelegate next)
+            {
+                message.Headers["Target-Url"] = _url;
+                return next(message);
+            }
         }
 
         private Process StartProcess(string dllPath, string args)

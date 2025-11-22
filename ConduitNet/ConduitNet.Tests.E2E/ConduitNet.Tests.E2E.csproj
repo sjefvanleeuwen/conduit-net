@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Examples\ConduitNet.Examples.Directory\ConduitNet.Examples.Directory.csproj" />
     <ProjectReference Include="..\..\Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj" />
+    <ProjectReference Include="..\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" />
   </ItemGroup>
 
 </Project>

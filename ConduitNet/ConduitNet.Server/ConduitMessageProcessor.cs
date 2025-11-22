@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -23,6 +24,15 @@ namespace ConduitNet.Server
 
         public async Task<ConduitMessage> ProcessAsync(ConduitMessage request)
         {
+            // Extract trace context
+            ActivityContext parentContext = default;
+            if (request.Headers.TryGetValue("traceparent", out var traceParent))
+            {
+                ActivityContext.TryParse(traceParent, request.Headers.TryGetValue("tracestate", out var traceState) ? traceState : null, out parentContext);
+            }
+
+            using var activity = ConduitTelemetry.Source.StartActivity("ConduitServer.Process", ActivityKind.Server, parentContext);
+
             ConduitMessage response;
             using var scope = _provider.CreateScope();
 
@@ -76,7 +86,11 @@ namespace ConduitNet.Server
                 foreach (var filter in filters)
                 {
                     var next = pipeline;
-                    pipeline = msg => filter.InvokeAsync(msg, next);
+                    pipeline = async msg => 
+                    {
+                        using var filterActivity = ConduitTelemetry.Source.StartActivity($"Filter: {filter.GetType().Name}");
+                        return await filter.InvokeAsync(msg, next);
+                    };
                 }
 
                 response = await pipeline(request);
