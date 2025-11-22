@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>ConduitNet TypeScript Client - Zero-Config RPC for the Web</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Official TypeScript client for ConduitNet. Connect your web frontend to your .NET mesh with transparent RPC and MessagePack serialization." />
+		<meta name="keywords" content="ConduitNet, TypeScript, RPC, WebSocket, MessagePack, Frontend, Client" />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://conduitnet.com/client.html" />
+		<meta property="og:title" content="ConduitNet TypeScript Client" />
+		<meta property="og:description" content="Connect your web frontend to your .NET mesh with transparent RPC." />
+		<meta property="og:image" content="https://conduitnet.com/images/conduit.png" />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content="https://conduitnet.com/client.html" />
+		<meta property="twitter:title" content="ConduitNet TypeScript Client" />
+		<meta property="twitter:description" content="Connect your web frontend to your .NET mesh with transparent RPC." />
+		<meta property="twitter:image" content="https://conduitnet.com/images/conduit.png" />
+
+        <!-- Syntax Highlighting (Prism) -->
+        <link href="https://unpkg.com/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css" rel="stylesheet" />
+        <style>
+            /* Force VS Code Dark Background */
+            pre[class*="language-"], code[class*="language-"] {
+                background-color: #1e1e1e !important;
+                background-image: none !important;
+                color: #d4d4d4 !important;
+                text-shadow: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                font-family: Consolas, 'Courier New', monospace !important;
+                font-size: 14px !important;
+                /* Responsive wrapping */
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+            }
+            
+            /* Adjust Line Numbers to match VS Code */
+            .line-numbers .line-numbers-rows {
+                border-right: 1px solid #404040 !important;
+            }
+        </style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+		<script type="module" src="/src/client.ts"></script>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<conduit-nav></conduit-nav>
+
+			<!-- Hero -->
+                <conduit-hero 
+                    background-image="images/background8.png"
+                    title="TypeScript Client" 
+                    subtitle="Transparent WebSocket RPC for the Web"
+                ></conduit-hero>
+
+			<!-- Main Content -->
+				<div id="main" class="wrapper style1">
+					<div class="container">
+						<header class="major">
+							<h2>Connect Your Frontend</h2>
+							<p>The ConduitNet TypeScript client brings the power of transparent RPC to the browser. Interact with your .NET microservices as if they were local JavaScript objects.</p>
+						</header>
+
+						<!-- Content -->
+							<section>
+								<h3>Installation</h3>
+								<p>Install the client package via npm. It has zero dependencies other than the MessagePack serializer.</p>
+                                <pre class="line-numbers"><code class="language-bash">npm install conduit-ts-client</code></pre>
+							</section>
+
+                            <section>
+                                <h3>Basic Usage</h3>
+                                <p>Connect to any Conduit Node in your mesh. The client handles the WebSocket handshake and binary framing automatically.</p>
+                                <pre class="line-numbers"><code class="language-typescript">import { ConduitClient } from 'conduit-ts-client';
+
+// Connect to the mesh
+const client = new ConduitClient('ws://localhost:5000/conduit');
+await client.connect();
+
+// Invoke a method dynamically
+const result = await client.invoke('IUserService', 'GetUserAsync', [123]);</code></pre>
+                            </section>
+
+                            <section>
+                                <h3>Transparent Proxies</h3>
+                                <p>For the best developer experience, define your interfaces in TypeScript and create a transparent proxy. This gives you full IntelliSense and type safety.</p>
+                                <pre class="line-numbers"><code class="language-typescript">// 1. Define the interface (matches your .NET contract)
+interface IUserService {
+    GetUserAsync(id: number): Promise<UserDto>;
+    SaveUserAsync(user: UserDto): Promise<void>;
+}
+
+interface UserDto {
+    Id: number;
+    Name: string;
+    Email: string;
+}
+
+// 2. Create the proxy
+const userService = client.createProxy&lt;IUserService&gt;('IUserService');
+
+// 3. Call methods naturally
+try {
+    const user = await userService.GetUserAsync(123);
+    console.log(`Hello, ${user.Name}!`);
+} catch (err) {
+    console.error('RPC Failed:', err);
+}</code></pre>
+                            </section>
+
+                            <section>
+                                <h3>Features</h3>
+                                <ul>
+                                    <li><strong>Binary Protocol:</strong> Uses MessagePack for compact, high-performance serialization.</li>
+                                    <li><strong>Zero-Copy:</strong> Efficiently handles binary frames using <code>Uint8Array</code> and <code>DataView</code>.</li>
+                                    <li><strong>Type Safe:</strong> Leverages TypeScript generics and proxies for a robust development experience.</li>
+                                    <li><strong>Universal:</strong> Works in any modern browser or Node.js environment that supports WebSockets.</li>
+                                </ul>
+                            </section>
+
+					</div>
+				</div>
+
+			<!-- Footer -->
+                <conduit-footer></conduit-footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

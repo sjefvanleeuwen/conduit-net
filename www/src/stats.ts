@@ -1,4 +1,5 @@
 import './styles/main.scss';
+import './components/conduit-nav/conduit-nav';
 import './components/conduit-hero';
 
 console.log('ConduitNet Stats Page Loaded');
