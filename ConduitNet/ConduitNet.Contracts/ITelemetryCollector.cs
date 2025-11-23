@@ -8,6 +8,8 @@ namespace ConduitNet.Contracts
     public interface ITelemetryCollector
     {
         Task IngestBatchAsync(List<TraceSpanDto> spans);
+        Task<List<TraceSpanDto>> GetRecentSpansAsync();
+        Task<List<TraceSpanDto>> GetTraceAsync(string traceId);
     }
 
     [MessagePackObject]

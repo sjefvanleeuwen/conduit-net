@@ -33,6 +33,11 @@ export class ConduitClient {
 
             this.ws.onclose = () => {
                 this.isConnected = false;
+                // Reject all pending calls
+                for (const { reject } of this.pendingCalls.values()) {
+                    reject(new Error("Connection closed"));
+                }
+                this.pendingCalls.clear();
             };
 
             this.ws.onmessage = async (event) => {
@@ -63,7 +68,19 @@ export class ConduitClient {
         const payload = buffer.subarray(4, 4 + length);
         
         try {
-            const message = decode(payload) as ConduitMessage;
+            // Decode as Array (matching C# [MessagePackObject])
+            const messageData = decode(payload) as any[];
+            
+            // Map Array to Object
+            // C# Order: [0]Id, [1]MethodName, [2]Payload, [3]IsError, [4]Headers, [5]InterfaceName
+            const message: ConduitMessage = {
+                Id: messageData[0],
+                MethodName: messageData[1],
+                Payload: messageData[2],
+                IsError: messageData[3],
+                Headers: messageData[4],
+                InterfaceName: messageData[5]
+            };
             
             if (this.pendingCalls.has(message.Id)) {
                 const { resolve, reject } = this.pendingCalls.get(message.Id)!;
@@ -94,18 +111,19 @@ export class ConduitClient {
         // 1. Serialize Arguments to MessagePack
         const argsPayload = encode(args);
         
-        // 2. Create Envelope
-        const message: ConduitMessage = {
-            Id: id,
-            MethodName: methodName,
-            InterfaceName: interfaceName,
-            Payload: argsPayload,
-            IsError: false,
-            Headers: {}
-        };
+        // 2. Create Envelope (as Array to match C# [MessagePackObject])
+        // C# Order: [0]Id, [1]MethodName, [2]Payload, [3]IsError, [4]Headers, [5]InterfaceName
+        const messageArray = [
+            id,
+            methodName,
+            argsPayload,
+            false, // IsError
+            {},    // Headers
+            interfaceName
+        ];
         
         // 3. Serialize Envelope
-        const messageBytes = encode(message);
+        const messageBytes = encode(messageArray);
         
         // 4. Prepend Length Prefix (4 bytes, Little Endian)
         const length = messageBytes.length;

@@ -8,7 +8,6 @@
       "applicationUrl": "http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Conduit:NodeUrl": "http://localhost:5001",
         "Conduit:DirectoryUrl": "ws://localhost:5000/conduit"
       }
     },

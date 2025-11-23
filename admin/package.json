@@ -1,0 +1,19 @@
+{
+  "name": "conduit-admin",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "sass": "^1.69.0",
+    "typescript": "^5.2.2",
+    "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "conduit-ts-client": "file:../conduit-ts-client"
+  }
+}

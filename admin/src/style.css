@@ -1,0 +1,290 @@
+:root {
+  --bg: #1c1d26;
+  --bg-transparent: rgba(23,24,32,0.95);
+  --fg-bold: #ffffff;
+  --fg: rgba(255,255,255,0.75);
+  --fg-light: rgba(255,255,255,0.5);
+  --fg-lighter: rgba(255,255,255,0.15);
+  --border: rgba(255,255,255,0.3);
+  --border-bg: rgba(255,255,255,0.075);
+  --accent1: #e44c65;
+  --accent2: #272833;
+  --accent3: #5480f1;
+  --accent4: #39c088;
+  --font-family: 'Exo 2', Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-family);
+  font-weight: 300;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--accent3);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--fg-bold);
+  font-weight: 400;
+}
+
+/* Layout */
+.wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+admin-sidebar {
+  width: 250px;
+  background-color: var(--accent2);
+  border-right: 1px solid var(--border-bg);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+admin-header {
+  height: 60px;
+  background-color: var(--accent2);
+  border-bottom: 1px solid var(--border-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: var(--bg);
+}
+
+/* Sidebar */
+.sidebar-logo {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border-bg);
+}
+
+.sidebar-logo h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--accent1);
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li a {
+  display: block;
+  padding: 15px 20px;
+  color: var(--fg);
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.sidebar-nav li a:hover, .sidebar-nav li a.active {
+  background-color: var(--border-bg);
+  color: var(--fg-bold);
+  border-left-color: var(--accent1);
+  text-decoration: none;
+}
+
+.sidebar-nav .icon {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Header */
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+}
+
+#sidebar-toggle {
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.breadcrumb {
+  color: var(--fg-light);
+  font-size: 0.9rem;
+}
+
+.user-info {
+  color: var(--fg-bold);
+}
+
+/* Dashboard */
+.dashboard-header {
+  margin-bottom: 20px;
+}
+
+.dashboard-widgets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.widget {
+  background-color: var(--accent2);
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border-bg);
+}
+
+.widget h3 {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: var(--fg-light);
+  text-transform: uppercase;
+}
+
+.widget .value {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--fg-bold);
+}
+
+.widget .value.error {
+  color: var(--accent1);
+}
+
+.dashboard-panel {
+  background-color: var(--accent2);
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border-bg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.table th, .table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-bg);
+}
+
+.table th {
+  color: var(--fg-light);
+  font-weight: 400;
+}
+
+.table td {
+  color: var(--fg);
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #fff;
+}
+
+.badge.success {
+  background-color: var(--accent4);
+}
+
+.badge.info {
+  background-color: var(--accent3);
+}
+
+/* Role Manager */
+.role-manager {
+  display: flex;
+  gap: 20px;
+}
+
+.role-list {
+  width: 200px;
+  border-right: 1px solid var(--border-bg);
+}
+
+.role-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.role-list li a {
+  display: block;
+  padding: 10px;
+  color: var(--fg);
+  border-radius: 4px;
+}
+
+.role-list li a:hover {
+  background-color: var(--border-bg);
+}
+
+.role-details {
+  flex: 1;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--accent3);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  background-color: var(--border-bg);
+  color: var(--fg);
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.btn-danger {
+  background-color: var(--accent1);
+  color: #fff;
+}
