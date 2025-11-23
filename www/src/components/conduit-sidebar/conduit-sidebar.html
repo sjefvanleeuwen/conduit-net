@@ -1,0 +1,61 @@
+<style>
+    /* Force the parent row to be flexbox so columns stretch to equal height */
+    .row.gtr-150 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Ensure the sidebar column takes up full height of the row */
+    conduit-sidebar {
+        display: block;
+        height: 100%;
+    }
+
+    #sidebar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 5em; /* Clear the fixed header */
+        max-height: calc(100vh - 6em); /* Fit within viewport */
+        overflow-y: auto; /* Scroll internally if content is long */
+        
+        /* Admin-style pane look */
+        background: rgba(30, 30, 30, 0.4);
+        padding: 1.5em;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+    }
+
+    /* Custom Scrollbar */
+    #sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    #sidebar::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+    }
+    #sidebar::-webkit-scrollbar-thumb {
+        background: rgba(227, 67, 94, 0.5); /* Accent color */
+        border-radius: 3px;
+    }
+
+    /* Active link highlighting (simple heuristic) */
+    #sidebar a:hover, #sidebar a.active {
+        color: #e44c65 !important;
+    }
+    #sidebar a.active {
+        font-weight: bold;
+    }
+</style>
+<section id="sidebar">
+    <section>
+        <h3>Documentation</h3>
+        <ul class="alt">
+            <li><a href="query-language.html">Architecture</a></li>
+            <li><a href="cqp-manual.html">Query Manual</a></li>
+            <li><a href="client.html">Client</a></li>
+            <li><a href="telemetry.html">Telemetry</a></li>
+        </ul>
+    </section>
+    <hr />
+    <div id="sidebar-content"></div>
+</section>

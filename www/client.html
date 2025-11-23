@@ -57,7 +57,7 @@
 
 		<script type="module" src="/src/client.ts"></script>
 	</head>
-	<body class="is-preload">
+	<body class="is-preload left-sidebar">
 		<div id="page-wrapper">
 
 			<!-- Header -->
@@ -78,9 +78,15 @@
 							<p>The ConduitNet TypeScript client brings the power of transparent RPC to the browser. Interact with your .NET microservices as if they were local JavaScript objects.</p>
 						</header>
 
-						<!-- Content -->
-							<section>
-								<h3>Installation</h3>
+                        <div class="row gtr-150">
+                            <div class="col-4 col-12-medium">
+                                <conduit-sidebar></conduit-sidebar>
+                            </div>
+                            <div class="col-8 col-12-medium imp-medium">
+
+                                <!-- Content -->
+                                    <section>
+                                        <h3>Installation</h3>
 								<p>Install the client package via npm. It has zero dependencies other than the MessagePack serializer.</p>
                                 <pre class="line-numbers"><code class="language-bash">npm install conduit-ts-client</code></pre>
 							</section>
@@ -135,6 +141,9 @@ try {
                                 </ul>
                             </section>
 
+                            </div>
+                        </div>
+
 					</div>
 				</div>
 
@@ -144,14 +153,14 @@ try {
 		</div>
 
 		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.dropotron.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/jquery.scrolly.min.js"></script>
+			<script src="/js/jquery.dropotron.min.js"></script>
+			<script src="/js/jquery.scrollex.min.js"></script>
+			<script src="/js/browser.min.js"></script>
+			<script src="/js/breakpoints.min.js"></script>
+			<script src="/js/util.js"></script>
+			<script src="/js/main.js"></script>
 
 	</body>
 </html>

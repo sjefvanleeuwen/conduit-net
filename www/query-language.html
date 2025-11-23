@@ -1,0 +1,506 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Conduit Query Protocol - Distributed LINQ</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Conduit Query Protocol (CQP) enables distributed LINQ queries over WebSockets using a zero-copy binary format." />
+		<meta name="keywords" content="LINQ, Distributed Query, MessagePack, TypeScript, C#, IQueryable, WebSockets" />
+        
+        <!-- Open Graph / Facebook -->
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://conduitnet.com/query-language.html" />
+		<meta property="og:title" content="Conduit Query Protocol" />
+		<meta property="og:description" content="Exposing IQueryable over WebSockets with zero-copy performance." />
+		<meta property="og:image" content="https://conduitnet.com/images/conduit.png" />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content="https://conduitnet.com/query-language.html" />
+		<meta property="twitter:title" content="Conduit Query Protocol" />
+		<meta property="twitter:description" content="Exposing IQueryable over WebSockets with zero-copy performance." />
+		<meta property="twitter:image" content="https://conduitnet.com/images/conduit.png" />
+
+		<script type="module" src="/src/query-language.ts"></script>
+	</head>
+	<body class="is-preload left-sidebar">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<conduit-nav></conduit-nav>
+
+			<!-- Hero -->
+                <conduit-hero 
+                    title="Conduit Query Protocol" 
+                    subtitle="Exposing IQueryable over WebSockets with zero-copy performance."
+                ></conduit-hero>
+
+			<!-- Main -->
+				<div id="main" class="wrapper style1">
+					<div class="container">
+						<section id="content">
+                            
+                            <!-- 1. The Challenge -->
+                            <h3>1. The Challenge</h3>
+                            <p>Exposing <code>IQueryable&lt;T&gt;</code> over a network boundary is complex because:</p>
+                            <ol>
+                                <li><strong>Serialization</strong>: .NET Expression Trees are not serializable by default.</li>
+                                <li><strong>Security</strong>: Accepting arbitrary expression trees allows remote code execution (RCE) if not carefully sanitized.</li>
+                                <li><strong>Interoperability</strong>: TypeScript/JavaScript clients do not have a native concept of LINQ Expression Trees.</li>
+                                <li><strong>Performance</strong>: GraphQL or OData parsers add significant CPU overhead.</li>
+                            </ol>
+
+                            <hr />
+
+                            <!-- 2. The Solution -->
+                            <h3>2. The Solution: Conduit Query Protocol (CQP)</h3>
+                            <p>Instead of sending raw Expression Trees or using a heavy text-based protocol like GraphQL, ConduitNet will use a <strong>Structured Query Object (SQO)</strong> pattern. This is a lightweight, binary-serializable intermediate representation of a query.</p>
+
+                            <h4>2.1. The Wire Format (MessagePack)</h4>
+                            <p>The query is serialized into a compact binary structure.</p>
+                            <pre><code class="language-csharp">[MessagePackObject]
+public class ConduitQuery
+{
+    [Key(0)]
+    public List&lt;QueryFilter&gt; Filters { get; set; } = new();
+
+    [Key(1)]
+    public List&lt;QuerySort&gt; Sorts { get; set; } = new();
+
+    [Key(2)]
+    public int? Skip { get; set; }
+
+    [Key(3)]
+    public int? Take { get; set; }
+
+    [Key(4)]
+    public List&lt;string&gt; SelectFields { get; set; } // Projection
+
+    [Key(5)]
+    public List&lt;QueryInclude&gt; Includes { get; set; } // Relationships
+
+    [Key(6)]
+    public List&lt;string&gt; GroupBy { get; set; } // Grouping fields
+
+    [Key(7)]
+    public List&lt;QueryAggregate&gt; Aggregates { get; set; } // Sum, Count, Min, Max
+
+    [Key(8)]
+    public Dictionary&lt;string, string&gt; CustomProperties { get; set; } // Extensibility bag
+}
+
+[MessagePackObject]
+public class QueryAggregate
+{
+    [Key(0)]
+    public AggregateType Type { get; set; } // Count, Sum, Min, Max, Avg
+    
+    [Key(1)]
+    public string FieldName { get; set; } // The field to aggregate
+    
+    [Key(2)]
+    public string Alias { get; set; } // The name in the result
+}
+
+[MessagePackObject]
+public class QueryInclude
+{
+    [Key(0)]
+    public string Path { get; set; } // e.g. "Posts" or "Posts.Comments"
+
+    [Key(1)]
+    public ConduitQuery Filter { get; set; } // Nested query for the related collection
+}
+
+[MessagePackObject]
+public class QueryFilter
+{
+    [Key(0)]
+    public string FieldName { get; set; }
+    
+    [Key(1)]
+    public FilterOperator Operator { get; set; } // Eq, Gt, Lt, Contains, Any, All
+    
+    [Key(2)]
+    public object Value { get; set; } // Can be primitive, or List&lt;QueryFilter&gt; for Any/All
+    
+    [Key(3)]
+    public LogicOperator Logic { get; set; } // And, Or
+
+    [Key(4)]
+    public List&lt;QueryFilter&gt; Group { get; set; } // For nested groups (e.g. (A OR B) AND C)
+}
+
+[MessagePackObject]
+public class QuerySort
+{
+    [Key(0)]
+    public string FieldName { get; set; }
+
+    [Key(1)]
+    public bool IsDescending { get; set; }
+}</code></pre>
+
+                            <hr />
+
+                            <!-- 3. C# Client -->
+                            <h3>3. C# Client Implementation (The "Magic")</h3>
+                            <p>We implement a custom <code>IQueryProvider</code>. This allows C# clients to write standard LINQ, which ConduitNet translates into <code>ConduitQuery</code> objects at runtime.</p>
+
+                            <h4>Usage</h4>
+                            <pre><code class="language-csharp">// Client code looks like standard LINQ
+var users = await userService.Users
+    .Where(u => u.Age > 18 && u.Role == "Admin")
+    .OrderByDescending(u => u.LastLogin)
+    .Skip(10)
+    .Take(20)
+    .ToListAsync();</code></pre>
+
+                            <h4>How it works</h4>
+                            <ol>
+                                <li><strong>Interception</strong>: The <code>DispatchProxy</code> intercepts the property access to <code>Users</code>.</li>
+                                <li><strong>Expression Visiting</strong>: A custom <code>ExpressionVisitor</code> walks the LINQ expression tree.
+                                    <ul><li><code>u.Age > 18</code> becomes <code>Filter { Field="Age", Op=Gt, Value=18 }</code>.</li></ul>
+                                </li>
+                                <li><strong>Serialization</strong>: The resulting <code>ConduitQuery</code> object is serialized via MessagePack.</li>
+                                <li><strong>Transport</strong>: Sent over WebSocket to the server.</li>
+                            </ol>
+
+                            <hr />
+
+                            <!-- 4. TypeScript Client -->
+                            <h3>4. TypeScript Client Implementation</h3>
+                            <p>TypeScript does not have LINQ. While libraries like <code>linq.ts</code> exist, they operate on in-memory arrays. We need a <strong>Fluent Query Builder</strong> that constructs our <code>ConduitQuery</code> object.</p>
+
+                            <h4>Why not GraphQL?</h4>
+                            <ul>
+                                <li><strong>Overhead</strong>: GraphQL requires string parsing and schema validation on every request.</li>
+                                <li><strong>Size</strong>: GraphQL queries are verbose strings. CQP is compact binary.</li>
+                                <li><strong>Coupling</strong>: GraphQL requires a separate schema definition. CQP is derived directly from your C# DTOs.</li>
+                            </ul>
+
+                            <h4>Proposed TS Syntax</h4>
+                            <p>We can generate a type-safe builder based on the DTO interfaces.</p>
+                            <pre><code class="language-typescript">// Generated or Generic Builder
+const query = conduit.from&lt;User&gt;('Users')
+    .where('age', '>', 18)
+    .and('role', '==', 'Admin')
+    .orderByDesc('lastLogin')
+    .skip(10)
+    .take(20);
+
+// Executes: sends MessagePack binary of the query structure
+const users = await query.execute();</code></pre>
+
+                            <h4>Advanced: Type-Safe Builder (Mapped Types)</h4>
+                            <p>We can use TypeScript's advanced type system to ensure field names exist.</p>
+                            <pre><code class="language-typescript">// Type-safe where clause
+.where(u => u.age, '>', 18) // Compiler checks 'age' exists on User</code></pre>
+
+                            <hr />
+
+                            <!-- 5. Server-Side -->
+                            <h3>5. Server-Side Execution</h3>
+                            <p>The server receives the <code>ConduitQuery</code> and applies it to the actual data source (Entity Framework, Memory, etc.).</p>
+                            <pre><code class="language-csharp">public async Task&lt;List&lt;UserDto&gt;&gt; GetUsersAsync(ConduitQuery query)
+{
+    IQueryable&lt;User&gt; dbQuery = _dbContext.Users;
+
+    // 1. Apply Includes (Eager Loading)
+    foreach(var include in query.Includes)
+    {
+        // If the include has a filter, we need to use .Select() projection or specialized EF Core features
+        // For simple includes:
+        dbQuery = dbQuery.Include(include.Path);
+    }
+
+    // 2. Apply Filters
+    foreach(var filter in query.Filters)
+    {
+        dbQuery = dbQuery.ApplyFilter(filter); // Dynamic Expression Tree construction
+    }
+
+    // 3. Apply Sorts
+    foreach(var sort in query.Sorts)
+    {
+        dbQuery = dbQuery.ApplySort(sort);
+    }
+
+    // 4. Paging
+    if (query.Skip.HasValue) dbQuery = dbQuery.Skip(query.Skip.Value);
+    if (query.Take.HasValue) dbQuery = dbQuery.Take(query.Take.Value);
+
+    return await dbQuery.ToListAsync();
+}</code></pre>
+
+                            <hr />
+
+                            <!-- 6. Relationships -->
+                            <h3>6. Handling Relationships (The "Graph" in GraphQL)</h3>
+                            <p>To match GraphQL's ability to query related data (e.g., <code>users { posts { title } }</code>), CQP uses the <code>Includes</code> property.</p>
+
+                            <h4>Recursive Querying</h4>
+                            <p>Each <code>QueryInclude</code> contains a full <code>ConduitQuery</code> object. This allows you to apply filters, sorts, and paging to the <em>related</em> collection.</p>
+
+                            <pre><code class="language-typescript">// TypeScript Example: Get Users and their recent active Posts
+const query = conduit.from&lt;User&gt;('Users')
+    .where('age', '>', 18)
+    .include('Posts', q => q
+        .where('active', '==', true)
+        .orderByDesc('createdDate')
+        .take(5)
+    );</code></pre>
+
+                            <p>This recursive structure allows CQP to handle complex object graphs while maintaining a flat, binary-friendly wire format.</p>
+
+                            <hr />
+
+                            <!-- 7. Federation -->
+                            <h3>7. Distributed Federation (Microservices)</h3>
+                            <p>In a microservices architecture, <code>Users</code> and <code>Posts</code> might live in different services. CQP handles this via <strong>Query Stitching</strong>.</p>
+
+                            <h4>The Process: <code>Users.Take(5).Include(Posts)</code></h4>
+                            <ol>
+                                <li><strong>Root Execution</strong>: <code>UserService</code> executes the query for `Users` locally with <code>Take(5)</code>.</li>
+                                <li><strong>ID Extraction</strong>: It collects the IDs of the returned users (e.g., <code>[101, 102, 103, 104, 105]</code>).</li>
+                                <li><strong>Remote Query</strong>: It constructs a new <code>ConduitQuery</code> for the <code>PostService</code>.
+                                    <ul>
+                                        <li>It injects a filter: <code>UserId IN [101, 102, 103, 104, 105]</code>.</li>
+                                        <li>This ensures we only fetch posts for the users we actually retrieved.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Stitching</strong>: It merges the results in memory before returning to the client.</li>
+                            </ol>
+                            <p>This allows the client to treat the distributed system as a single cohesive graph, similar to <strong>Apollo Federation</strong>.</p>
+
+                            <hr />
+
+                            <!-- 8. Advanced -->
+                            <h3>8. Advanced Capabilities</h3>
+                            
+                            <h4>8.1 Reverse Navigation (Any/All)</h4>
+                            <p>To support queries like "Users who have active posts" (<code>u.Posts.Any(p => p.Active)</code>), CQP supports collection operators.</p>
+                            <pre><code class="language-csharp">var filter = new QueryFilter 
+{
+    FieldName = "Posts",
+    Operator = FilterOperator.Any,
+    Value = new List&lt;QueryFilter&gt; 
+    {
+        new QueryFilter { FieldName = "Active", Operator = FilterOperator.Eq, Value = true }
+    }
+};</code></pre>
+
+                            <h4>8.2 Partial Results (Resilience)</h4>
+                            <p>In a distributed system, one downstream service might fail. Instead of failing the entire request, CQP returns a <strong>Partial Result</strong>.</p>
+                            <pre><code class="language-csharp">public class ConduitResult&lt;T&gt;
+{
+    public T Data { get; set; }
+    public List&lt;ConduitError&gt; Errors { get; set; }
+}</code></pre>
+                            <p>If <code>PostService</code> fails, the client receives the <code>User</code> object, but <code>Posts</code> will be null, and the <code>Errors</code> collection will contain details about the failure.</p>
+
+                            <h4>8.3 Sorting Capabilities</h4>
+                            <p>CQP supports robust sorting options, including multi-level sorts and sorting on nested collections.</p>
+
+                            <h5>Multiple Sorts (ThenBy)</h5>
+                            <p>The <code>Sorts</code> list implies priority. The first item is the primary sort, the second is the secondary sort, and so on.</p>
+                            <pre><code class="language-csharp">// Users.OrderBy(u => u.LastName).ThenByDescending(u => u.FirstName)
+var query = new ConduitQuery
+{
+    Sorts = new List&lt;QuerySort&gt;
+    {
+        new QuerySort { FieldName = "LastName", IsDescending = false },
+        new QuerySort { FieldName = "FirstName", IsDescending = true }
+    }
+};</code></pre>
+
+                            <h5>Nested Collection Sorting</h5>
+                            <p>Because <code>QueryInclude</code> contains a full <code>ConduitQuery</code>, you can sort related collections independently.</p>
+                            <pre><code class="language-typescript">// Get Users, and for each user, get their Posts sorted by Date
+conduit.from('Users')
+    .include('Posts', q => q.orderByDesc('CreatedDate'));</code></pre>
+
+                            <hr />
+
+                            <!-- 9. Aggregations -->
+                            <h3>9. Aggregations & Grouping</h3>
+                            <p>Mature applications need to summarize data. CQP supports SQL-like grouping and aggregation.</p>
+                            <pre><code class="language-typescript">// TypeScript: Count users by Role
+conduit.from('Users')
+    .groupBy('Role')
+    .aggregate('Count', 'Id', 'UserCount') // Count(Id) as UserCount
+    .execute();</code></pre>
+
+                            <hr />
+
+                            <!-- 10. Live Queries -->
+                            <h3>10. Real-time Subscriptions (Live Queries)</h3>
+                            <p>Since ConduitNet runs over WebSockets, we can offer <strong>Live Queries</strong>. The server monitors the data source and pushes <strong>Deltas</strong> when data matching the query changes.</p>
+                            <pre><code class="language-typescript">// TypeScript: Watch for new high-priority tickets
+const subscription = conduit.from('Tickets')
+    .where('Priority', '==', 'High')
+    .watch((delta) => {
+        if (delta.type === 'Added') console.log('New Ticket:', delta.item);
+        if (delta.type === 'Modified') console.log('Ticket Updated:', delta.item);
+    });</code></pre>
+                            <p>This eliminates the need for manual polling or separate SignalR hubs.</p>
+
+                            <hr />
+
+                            <!-- 11. Examples -->
+                            <h3>11. Query Examples</h3>
+                            <p>Here are common query patterns and how they translate to CQP.</p>
+
+                            <div class="row">
+                                <div class="col-6 col-12-medium">
+                                    <h4>Basic Filtering</h4>
+                                    <pre><code class="language-typescript">// Get active users over 18
+conduit.from('Users')
+    .where('Age', '>', 18)
+    .and('IsActive', '==', true)
+    .execute();</code></pre>
+                                </div>
+                                <div class="col-6 col-12-medium">
+                                    <h4>Sorting & Paging</h4>
+                                    <pre><code class="language-typescript">// Get page 2 of users, sorted by name
+conduit.from('Users')
+    .orderBy('LastName')
+    .thenBy('FirstName')
+    .skip(20)
+    .take(10)
+    .execute();</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 col-12-medium">
+                                    <h4>Projections (Select)</h4>
+                                    <pre><code class="language-typescript">// Get only ID and Name
+conduit.from('Users')
+    .select('Id', 'Name')
+    .execute();</code></pre>
+                                </div>
+                                <div class="col-6 col-12-medium">
+                                    <h4>Deep Relationships</h4>
+                                    <pre><code class="language-typescript">// Users with their recent comments
+conduit.from('Users')
+    .include('Posts', p => p
+        .include('Comments', c => c
+            .orderByDesc('Date')
+            .take(5)
+        )
+    )
+    .execute();</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 col-12-medium">
+                                    <h4>Reverse Navigation</h4>
+                                    <pre><code class="language-typescript">// Users who have posted about "Conduit"
+conduit.from('Users')
+    .where('Posts', 'any', p => p
+        .where('Title', 'contains', 'Conduit')
+    )
+    .execute();</code></pre>
+                                </div>
+                                <div class="col-6 col-12-medium">
+                                    <h4>Complex Logic Groups</h4>
+                                    <pre><code class="language-typescript">// (Admin OR Moderator) AND Active
+conduit.from('Users')
+    .whereGroup(g => g
+        .where('Role', '==', 'Admin')
+        .or('Role', '==', 'Moderator')
+    )
+    .and('IsActive', '==', true)
+    .execute();</code></pre>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <!-- 11. Extensibility -->
+                            <h3>11. Extensibility (Future-Proofing)</h3>
+                            <p>To ensure the protocol remains stable, <code>ConduitQuery</code> includes a <code>CustomProperties</code> dictionary. This allows you to pass domain-specific parameters without altering the core protocol.</p>
+                            <pre><code class="language-typescript">// Example: Time-Series Bucketing (Custom Extension)
+conduit.from('SensorReadings')
+    .where('DeviceId', '==', 123)
+    .withOption('BucketSize', '5m') // Custom property
+    .withOption('FillGaps', 'Zero')
+    .execute();</code></pre>
+
+                            <hr />
+
+                            <!-- 12. Security -->
+                            <h3>12. Security Considerations</h3>
+                            <p>Exposing <code>IQueryable</code> is powerful but dangerous.</p>
+                            <ol>
+                                <li><strong>Field Whitelisting</strong>: Only allow filtering on properties exposed in the DTO.</li>
+                                <li><strong>Complexity Limits</strong>: Limit the number of filters/sorts to prevent DoS.</li>
+                                <li><strong>No Arbitrary Code</strong>: Since we serialize a <em>structure</em> (CQP) and not code, we avoid RCE vulnerabilities associated with serializing raw Expression Trees.</li>
+                            </ol>
+
+                            <hr />
+
+                            <!-- 13. Summary -->
+                            <h3>13. Summary</h3>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Feature</th>
+                                            <th>GraphQL</th>
+                                            <th>Remote LINQ (Raw)</th>
+                                            <th>Conduit Query Protocol (CQP)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Wire Format</strong></td>
+                                            <td>Text (JSON)</td>
+                                            <td>Binary/JSON</td>
+                                            <td><strong>Binary (MessagePack)</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Performance</strong></td>
+                                            <td>Medium (Parsing)</td>
+                                            <td>High</td>
+                                            <td><strong>Very High (Zero-Copy)</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Security</strong></td>
+                                            <td>High (Schema)</td>
+                                            <td>Low (RCE Risk)</td>
+                                            <td><strong>High (Structured)</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Client Feel</strong></td>
+                                            <td>Query Language</td>
+                                            <td>Native C#</td>
+                                            <td><strong>Native C# / Fluent TS</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+						</section>
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<conduit-footer></conduit-footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/jquery.scrolly.min.js"></script>
+			<script src="/js/jquery.dropotron.min.js"></script>
+			<script src="/js/jquery.scrollex.min.js"></script>
+			<script src="/js/browser.min.js"></script>
+			<script src="/js/breakpoints.min.js"></script>
+			<script src="/js/util.js"></script>
+			<script src="/js/main.js"></script>
+
+	</body>
+</html>

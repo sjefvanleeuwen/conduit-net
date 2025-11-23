@@ -60,7 +60,7 @@
 
 		<script type="module" src="/src/telemetry.ts"></script>
 	</head>
-	<body class="is-preload">
+	<body class="is-preload left-sidebar">
 		<div id="page-wrapper">
 
 			<!-- Header -->
@@ -81,9 +81,15 @@
 							<p>In ConduitNet, telemetry isn't a sidecar or a magical agent. It's just another service. The <strong>Telemetry Node</strong> is a first-class citizen in the mesh, receiving traces via standard Conduit RPC calls.</p>
 						</header>
 
-						<!-- Content -->
-							<section>
-								<h3>Architecture Overview</h3>
+                        <div class="row gtr-150">
+                            <div class="col-4 col-12-medium">
+                                <conduit-sidebar></conduit-sidebar>
+                            </div>
+                            <div class="col-8 col-12-medium imp-medium">
+
+                                <!-- Content -->
+                                    <section>
+                                        <h3>Architecture Overview</h3>
 								<p>Instead of pushing data to an external HTTP endpoint directly, services in the mesh export their traces to a dedicated <code>ITelemetryCollector</code> service. This service runs on a standard Conduit Node.</p>
                                 
                                 <div class="mermaid">
@@ -194,6 +200,9 @@ protected override void ConfigureServices(IServiceCollection services)
                                 </ul>
 
 							</section>
+
+                            </div>
+                        </div>
 
 					</div>
 				</div>

@@ -4,4 +4,4 @@ import './components/conduit-footer/conduit-footer';
 import './components/conduit-sidebar/conduit-sidebar';
 import './components/conduit-hero';
 
-console.log('ConduitNet Client Docs Loaded');
+console.log('ConduitNet Manual Loaded');

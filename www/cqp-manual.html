@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>CQP Manual - ConduitNet</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Comprehensive manual for the Conduit Query Protocol (CQP). Learn how to write distributed queries in TypeScript and C#." />
+		<meta name="keywords" content="CQP, Manual, Documentation, LINQ, TypeScript, Query Builder" />
+        
+        <!-- Open Graph / Facebook -->
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://conduitnet.com/cqp-manual.html" />
+		<meta property="og:title" content="Conduit Query Protocol Manual" />
+		<meta property="og:description" content="The complete guide to querying with ConduitNet." />
+		<meta property="og:image" content="https://conduitnet.com/images/conduit.png" />
+
+		<script type="module" src="/src/cqp-manual.ts"></script>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<conduit-nav></conduit-nav>
+
+			<!-- Main -->
+				<div id="main" class="wrapper style1">
+					<div class="container">
+						<header class="major">
+							<h2>Conduit Query Protocol Manual</h2>
+							<p>The complete guide to writing distributed queries.</p>
+						</header>
+						<div class="row gtr-150">
+							<div class="col-4 col-12-medium">
+
+								<!-- Sidebar -->
+                                    <conduit-sidebar>
+                                        <section>
+                                            <h3>Manual Contents</h3>
+                                            <ul class="alt">
+                                                <li><a href="#introduction">1. Introduction</a></li>
+                                                <li><a href="#basic-querying">2. Basic Querying</a></li>
+                                                <li><a href="#filtering">3. Filtering</a></li>
+                                                <li><a href="#sorting-paging">4. Sorting & Paging</a></li>
+                                                <li><a href="#projections">5. Projections</a></li>
+                                                <li><a href="#relationships">6. Relationships</a></li>
+                                                <li><a href="#aggregations">7. Aggregations</a></li>
+                                                <li><a href="#real-time">8. Real-time Queries</a></li>
+                                                <li><a href="#extensibility">9. Extensibility</a></li>
+                                            </ul>
+                                        </section>
+                                    </conduit-sidebar>
+
+							</div>
+							<div class="col-8 col-12-medium imp-medium">
+
+								<!-- Content -->
+									<section id="content">
+                                        
+                                        <!-- 1. Introduction -->
+                                        <h3 id="introduction">1. Introduction</h3>
+                                        <p>The Conduit Query Protocol (CQP) is a type-safe, distributed query language designed to expose <code>IQueryable&lt;T&gt;</code> over WebSockets. It allows clients (TypeScript, C#, etc.) to filter, sort, page, and aggregate data residing on remote servers without writing custom endpoints for every requirement.</p>
+                                        <p>This manual focuses on the <strong>TypeScript Client</strong> usage, but the concepts apply equally to the C# LINQ provider.</p>
+
+                                        <hr />
+
+                                        <!-- 2. Basic Querying -->
+                                        <h3 id="basic-querying">2. Basic Querying</h3>
+                                        <p>To start a query, use the <code>conduit.from&lt;T&gt;(collectionName)</code> method. This returns a query builder.</p>
+                                        <pre><code class="language-typescript">import { conduit } from '@conduit/client';
+import { User } from './dtos';
+
+// Select all users
+const users = await conduit.from&lt;User&gt;('Users').execute();</code></pre>
+
+                                        <hr />
+
+                                        <!-- 3. Filtering -->
+                                        <h3 id="filtering">3. Filtering</h3>
+                                        <p>Filtering is done via the <code>.where()</code> method. You can chain multiple <code>.where()</code> calls, which acts as an implicit <code>AND</code>.</p>
+
+                                        <h4>Supported Operators</h4>
+                                        <div class="table-wrapper">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Operator</th>
+                                                        <th>Description</th>
+                                                        <th>Example</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr><td><code>==</code></td><td>Equals</td><td><code>.where('Age', '==', 18)</code></td></tr>
+                                                    <tr><td><code>!=</code></td><td>Not Equals</td><td><code>.where('Role', '!=', 'Guest')</code></td></tr>
+                                                    <tr><td><code>&gt;</code></td><td>Greater Than</td><td><code>.where('Score', '&gt;', 100)</code></td></tr>
+                                                    <tr><td><code>&lt;</code></td><td>Less Than</td><td><code>.where('Price', '&lt;', 50)</code></td></tr>
+                                                    <tr><td><code>&gt;=</code></td><td>Greater/Equal</td><td><code>.where('Date', '&gt;=', '2023-01-01')</code></td></tr>
+                                                    <tr><td><code>&lt;=</code></td><td>Less/Equal</td><td><code>.where('Rank', '&lt;=', 10)</code></td></tr>
+                                                    <tr><td><code>contains</code></td><td>String Contains</td><td><code>.where('Name', 'contains', 'John')</code></td></tr>
+                                                    <tr><td><code>startsWith</code></td><td>String Starts With</td><td><code>.where('Code', 'startsWith', 'A')</code></td></tr>
+                                                    <tr><td><code>endsWith</code></td><td>String Ends With</td><td><code>.where('File', 'endsWith', '.pdf')</code></td></tr>
+                                                    <tr><td><code>in</code></td><td>In List</td><td><code>.where('Id', 'in', [1, 2, 3])</code></td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <h4>Logical Groups (OR)</h4>
+                                        <p>To use <code>OR</code> logic, use <code>.or()</code> or <code>.whereGroup()</code>.</p>
+                                        <pre><code class="language-typescript">// (Role == Admin OR Role == Mod) AND Active == true
+conduit.from('Users')
+    .whereGroup(g => g
+        .where('Role', '==', 'Admin')
+        .or('Role', '==', 'Moderator')
+    )
+    .and('Active', '==', true)
+    .execute();</code></pre>
+
+                                        <hr />
+
+                                        <!-- 4. Sorting & Paging -->
+                                        <h3 id="sorting-paging">4. Sorting & Paging</h3>
+                                        <p>Use <code>orderBy</code>, <code>orderByDesc</code>, <code>thenBy</code>, <code>thenByDesc</code> for sorting. Use <code>skip</code> and <code>take</code> for pagination.</p>
+                                        <pre><code class="language-typescript">// Get page 2 (items 21-40), sorted by Name then Date
+conduit.from('Products')
+    .orderBy('Name')
+    .thenByDesc('CreatedDate')
+    .skip(20)
+    .take(20)
+    .execute();</code></pre>
+
+                                        <hr />
+
+                                        <!-- 5. Projections -->
+                                        <h3 id="projections">5. Projections</h3>
+                                        <p>To fetch only specific fields (reducing payload size), use <code>.select()</code>.</p>
+                                        <pre><code class="language-typescript">// Only fetch Id and Email
+const users = await conduit.from('Users')
+    .select('Id', 'Email')
+    .execute();</code></pre>
+
+                                        <hr />
+
+                                        <!-- 6. Relationships -->
+                                        <h3 id="relationships">6. Relationships (Includes)</h3>
+                                        <p>CQP allows you to fetch related data in a single request using <code>.include()</code>. You can nest includes arbitrarily deep.</p>
+                                        <pre><code class="language-typescript">// Get Users with their Posts, and those Posts' Comments
+conduit.from('Users')
+    .include('Posts', q => q
+        .where('Active', '==', true) // Filter the related posts
+        .orderByDesc('Date')         // Sort the related posts
+        .take(5)                     // Limit related posts per user
+        .include('Comments', c => c  // Nested include
+            .take(3)
+        )
+    )
+    .execute();</code></pre>
+
+                                        <h4>Reverse Navigation (Any/All)</h4>
+                                        <p>Filter parents based on properties of their children.</p>
+                                        <pre><code class="language-typescript">// Users who have ANY post with > 100 likes
+conduit.from('Users')
+    .where('Posts', 'any', p => p
+        .where('Likes', '>', 100)
+    )
+    .execute();</code></pre>
+
+                                        <hr />
+
+                                        <!-- 7. Aggregations -->
+                                        <h3 id="aggregations">7. Aggregations</h3>
+                                        <p>Perform server-side calculations using <code>.aggregate()</code> and <code>.groupBy()</code>.</p>
+                                        <pre><code class="language-typescript">// Count users by Country
+const stats = await conduit.from('Users')
+    .groupBy('Country')
+    .aggregate('Count', 'Id', 'TotalUsers')
+    .execute();
+// Result: [{ Country: 'USA', TotalUsers: 50 }, ...]</code></pre>
+
+                                        <hr />
+
+                                        <!-- 8. Real-time -->
+                                        <h3 id="real-time">8. Real-time Queries</h3>
+                                        <p>Turn any query into a live subscription using <code>.watch()</code>.</p>
+                                        <pre><code class="language-typescript">const sub = conduit.from('Orders')
+    .where('Status', '==', 'New')
+    .watch(delta => {
+        if (delta.type === 'Added') {
+            alert(`New Order: ${delta.item.Id}`);
+        }
+    });
+
+// Later...
+sub.unsubscribe();</code></pre>
+
+                                        <hr />
+
+                                        <!-- 9. Extensibility -->
+                                        <h3 id="extensibility">9. Extensibility</h3>
+                                        <p>Pass custom options to the server provider.</p>
+                                        <pre><code class="language-typescript">conduit.from('Logs')
+    .withOption('SearchStrategy', 'Fuzzy')
+    .execute();</code></pre>
+
+									</section>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<conduit-footer></conduit-footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/jquery.scrolly.min.js"></script>
+			<script src="/js/jquery.dropotron.min.js"></script>
+			<script src="/js/jquery.scrollex.min.js"></script>
+			<script src="/js/browser.min.js"></script>
+			<script src="/js/breakpoints.min.js"></script>
+			<script src="/js/util.js"></script>
+			<script src="/js/main.js"></script>
+
+	</body>
+</html>
