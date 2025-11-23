@@ -9,6 +9,7 @@ export class AdminSidebar extends HTMLElement {
                     <li><a href="#" data-page="dashboard" class="active"><i class="icon fa-tachometer-alt"></i> Dashboard</a></li>
                     <li><a href="#" data-page="users"><i class="icon fa-users"></i> Users</a></li>
                     <li><a href="#" data-page="roles"><i class="icon fa-lock"></i> Roles</a></li>
+                    <li><a href="#" data-page="query"><i class="icon fa-search"></i> Ad-Hoc Query</a></li>
                     <li><a href="#" data-page="telemetry"><i class="icon fa-chart-line"></i> Telemetry</a></li>
                     <li><a href="#" data-page="settings"><i class="icon fa-cogs"></i> Settings</a></li>
                 </ul>

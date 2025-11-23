@@ -4,6 +4,7 @@ import './admin-dashboard'
 import './admin-users'
 import './admin-roles'
 import './admin-telemetry'
+import './admin-query'
 
 export class AdminLayout extends HTMLElement {
     connectedCallback() {
@@ -40,6 +41,9 @@ export class AdminLayout extends HTMLElement {
                 break;
             case 'telemetry':
                 content.innerHTML = '<admin-telemetry></admin-telemetry>';
+                break;
+            case 'query':
+                content.innerHTML = '<admin-query></admin-query>';
                 break;
             default:
                 content.innerHTML = `<h2>Page ${page} not implemented</h2>`;

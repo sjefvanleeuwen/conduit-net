@@ -1,19 +1,63 @@
-import { ConduitService } from '../services/ConduitService';
-import { IUserService, UserDto, mapUserDto } from '../contracts';
+import { ConduitContext, DbSet, FilterOperator } from 'conduit-ts-client';
+
+// Define the Entity matching the C# DTO
+interface User {
+    Id: number;
+    Username: string;
+    Name: string;
+    Email: string;
+    Roles: string[];
+    LastLogin: string;
+}
 
 export class AdminUsers extends HTMLElement {
-    private userService: IUserService | null = null;
+    private context: ConduitContext;
+    private users: DbSet<User>;
+
+    constructor() {
+        super();
+        // Initialize the Fluent Client
+        // In a real app, the transport would be the WebSocket client
+        this.context = new ConduitContext(async (query) => {
+            console.log('Sending Fluent Query:', JSON.stringify(query, null, 2));
+            
+            // Mock Data for Demo
+            let data = [
+                { Id: 1, Username: 'admin', Name: 'Alice Admin', Email: 'alice@conduit.net', Roles: ['Admin'], LastLogin: '2023-11-01' },
+                { Id: 2, Username: 'bob', Name: 'Bob User', Email: 'bob@conduit.net', Roles: ['User'], LastLogin: '2023-11-05' },
+                { Id: 3, Username: 'charlie', Name: 'Charlie Mod', Email: 'charlie@conduit.net', Roles: ['Moderator'], LastLogin: '2023-10-20' }
+            ];
+
+            // Apply Mock Filtering (Client-side simulation of Server logic)
+            if (query.filters && query.filters.length > 0) {
+                for (const filter of query.filters) {
+                    if (filter.operator === FilterOperator.Contains) {
+                        const val = filter.value.toString().toLowerCase();
+                        data = data.filter(u => (u as any)[filter.fieldName].toString().toLowerCase().includes(val));
+                    }
+                    // Add other operators if needed for demo
+                }
+            }
+
+            return data;
+        });
+        
+        this.users = this.context.set<User>('Users');
+    }
 
     connectedCallback() {
         this.render();
-        this.initializeClient();
+        this.loadUsers();
     }
 
     render() {
         this.innerHTML = `
             <div class="dashboard-header">
                 <h1>User Administration</h1>
-                <button class="btn-primary" id="add-user-btn">Add User</button>
+                <div class="controls">
+                    <input type="text" id="search-input" placeholder="Search users..." />
+                    <button class="btn-primary" id="search-btn">Search</button>
+                </div>
             </div>
             
             <div class="dashboard-panel">
@@ -35,32 +79,34 @@ export class AdminUsers extends HTMLElement {
             </div>
         `;
         
-        this.querySelector('#add-user-btn')?.addEventListener('click', () => this.showAddUserModal());
+        this.querySelector('#search-btn')?.addEventListener('click', () => {
+            const term = (this.querySelector('#search-input') as HTMLInputElement).value;
+            this.loadUsers(term);
+        });
     }
 
-    async initializeClient() {
-        try {
-            this.userService = await ConduitService.getUserService();
-            this.loadUsers();
-        } catch (err) {
-            console.error(err);
-            this.querySelector('tbody')!.innerHTML = '<tr><td colspan="6" class="error">Failed to connect to User Service</td></tr>';
-        }
-    }
+    async loadUsers(searchTerm: string = '') {
+        const tbody = this.querySelector('tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
 
-    async loadUsers() {
-        if (!this.userService) return;
         try {
-            const rawUsers = await this.userService.GetAllUsersAsync() as any[];
-            const users = rawUsers.map(mapUserDto);
+            // Build the query using the Fluent API
+            let query = this.users.take(20).orderByDescending(u => u.LastLogin);
+
+            if (searchTerm) {
+                query = query.where(u => u.Name.contains(searchTerm));
+            }
+
+            const users = await query.toListAsync();
             this.renderUsers(users);
         } catch (err) {
             console.error(err);
-            this.querySelector('tbody')!.innerHTML = '<tr><td colspan="6" class="error">Failed to load users</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="error">Failed to load users</td></tr>';
         }
     }
 
-    renderUsers(users: UserDto[]) {
+    renderUsers(users: User[]) {
         const tbody = this.querySelector('tbody');
         if (!tbody) return;
 
@@ -78,14 +124,9 @@ export class AdminUsers extends HTMLElement {
                 <td>${user.Roles.join(', ')}</td>
                 <td>
                     <button class="btn-sm" onclick="alert('Edit ${user.Id}')">Edit</button>
-                    <button class="btn-sm btn-danger" onclick="alert('Delete ${user.Id}')">Delete</button>
                 </td>
             </tr>
         `).join('');
-    }
-
-    showAddUserModal() {
-        alert('Add User Modal Placeholder');
     }
 }
 
