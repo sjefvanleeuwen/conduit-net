@@ -30,16 +30,16 @@ namespace ConduitNet.Tests.E2E
             if (!File.Exists(api1Path)) throw new FileNotFoundException($"Api1 not found at {api1Path}");
             if (!File.Exists(api2Path)) throw new FileNotFoundException($"Api2 not found at {api2Path}");
 
-            // 1. Start Gateway (Api1 - Directory) on 5000
-            _gateway = StartProcess(api1Path, "--Conduit:Port 5000");
+            // 1. Start Gateway (Api1 - Directory) on 7000
+            _gateway = StartProcess(api1Path, "--Conduit:Port 7000");
 
-            // 2. Start Node B (Leader) on 5003
+            // 2. Start Node B (Leader) on 7003
             // Note: We use --Conduit:Port to override the port
-            _nodeB = StartProcess(api2Path, "--Conduit:Port 5003 --Consensus:IsLeader=true --Conduit:DirectoryUrl=ws://localhost:5000/");
+            _nodeB = StartProcess(api2Path, "--Conduit:Port 7003 --Consensus:IsLeader=true --Conduit:DirectoryUrl=ws://localhost:7000/");
 
-            // 3. Start Node A (Follower) on 5002
-            // Configured to redirect to 5003 (via Consensus LeaderUrl) but also register with Directory
-            _nodeA = StartProcess(api2Path, "--Conduit:Port 5002 --Consensus:IsLeader=false --Consensus:LeaderUrl=ws://localhost:5003/ --Conduit:DirectoryUrl=ws://localhost:5000/");
+            // 3. Start Node A (Follower) on 7002
+            // Configured to redirect to 7003 (via Consensus LeaderUrl) but also register with Directory
+            _nodeA = StartProcess(api2Path, "--Conduit:Port 7002 --Consensus:IsLeader=false --Consensus:LeaderUrl=ws://localhost:7003/ --Conduit:DirectoryUrl=ws://localhost:7000/");
 
             // Give them time to start up
             await Task.Delay(5000);
@@ -51,7 +51,7 @@ namespace ConduitNet.Tests.E2E
                 
                 var filters = new List<IConduitFilter>
                 {
-                    new FixedTargetFilter("ws://localhost:5002/"),
+                    new FixedTargetFilter("ws://localhost:7002/"),
                     new LeaderRoutingFilter()
                 };
                 var executor = new ConduitPipelineExecutor(transport, filters);

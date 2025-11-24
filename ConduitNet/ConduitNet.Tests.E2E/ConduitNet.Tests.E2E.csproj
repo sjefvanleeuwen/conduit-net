@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj" />
     <ProjectReference Include="..\ConduitNet.System\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" />
     <ProjectReference Include="..\ConduitNet.System\ConduitNet.Registry\ConduitNet.Registry.csproj" />
+    <ProjectReference Include="..\..\Examples\ConduitNet.Examples.AclService\ConduitNet.Examples.AclService.csproj" />
   </ItemGroup>
 
 </Project>

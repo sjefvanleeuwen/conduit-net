@@ -30,13 +30,13 @@ namespace ConduitNet.Tests.E2E
 
             if (!File.Exists(registryDll)) throw new FileNotFoundException($"Registry DLL not found at {registryDll}");
 
-            // 1. Start Registry Node on port 7000
+            // 1. Start Registry Node on port 8000
             // We pass the storage root as an argument if the node supports it, or via env var/config.
             // The RegistryService currently defaults to "./registry-data". 
             // Let's assume we run it in a temp dir or just let it use the default relative path.
             // For better isolation, we should probably update RegistryService to take config, but for now let's run it.
             
-            _registryNode = StartProcess(registryDll, "--Conduit:Port 7000");
+            _registryNode = StartProcess(registryDll, "--Conduit:Port 8000");
 
             // Give it time to start
             await Task.Delay(3000);
@@ -47,7 +47,7 @@ namespace ConduitNet.Tests.E2E
                 var transport = new ConduitTransport();
                 var filters = new List<IConduitFilter>
                 {
-                    new FixedTargetFilter("ws://localhost:7000/")
+                    new FixedTargetFilter("ws://localhost:8000/")
                 };
                 var executor = new ConduitPipelineExecutor(transport, filters);
                 var proxy = System.Reflection.DispatchProxy.Create<IRegistryService, ConduitProxy<IRegistryService>>();
