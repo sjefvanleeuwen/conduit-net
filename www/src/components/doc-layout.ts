@@ -3,6 +3,7 @@ import './doc-header';
 // Import pages (we will create these next)
 import './pages/doc-home';
 import './pages/doc-client';
+import './pages/doc-cli';
 import './pages/doc-cqp';
 import './pages/doc-architecture';
 import './pages/doc-telemetry';
@@ -23,13 +24,15 @@ export class DocLayout extends HTMLElement {
 
         this.addEventListener('navigate', (e: any) => {
             const page = e.detail.page;
-            window.history.pushState({ page }, '', `#${page}`);
-            this.loadPage(page);
+            const anchor = e.detail.anchor;
+            window.history.pushState({ page, anchor }, '', `#${page}`);
+            this.loadPage(page, anchor);
         });
 
         window.addEventListener('popstate', (e) => {
             const page = e.state?.page || this.getPageFromUrl();
-            this.loadPage(page);
+            const anchor = e.state?.anchor;
+            this.loadPage(page, anchor);
         });
 
         // Initial load
@@ -42,7 +45,7 @@ export class DocLayout extends HTMLElement {
         return hash || 'home';
     }
 
-    loadPage(page: string) {
+    loadPage(page: string, anchor?: string) {
         const content = this.querySelector('#content-area');
         const header = this.querySelector('doc-header') as any;
         const sidebar = this.querySelector('doc-sidebar') as any;
@@ -59,6 +62,10 @@ export class DocLayout extends HTMLElement {
             case 'client':
                 componentName = 'doc-client';
                 breadcrumb = 'Documentation / TypeScript Client';
+                break;
+            case 'cli':
+                componentName = 'doc-cli';
+                breadcrumb = 'Documentation / CLI';
                 break;
             case 'cqp':
                 componentName = 'doc-cqp';
@@ -78,6 +85,24 @@ export class DocLayout extends HTMLElement {
         }
 
         content.innerHTML = `<${componentName}></${componentName}>`;
+        
+        if (anchor) {
+            // Wait for component to render
+            setTimeout(() => {
+                // We need to look inside the shadow root if the component uses one, 
+                // but here we are just using innerHTML in connectedCallback so it's in the light DOM of the custom element.
+                // However, the custom element itself is in the light DOM of doc-layout (which is also light DOM).
+                // The content is inside <doc-cli>.
+                const pageElement = content.querySelector(componentName);
+                if (pageElement) {
+                    const target = pageElement.querySelector(`#${anchor}`);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            }, 100);
+        }
+
         if (header && header.updateBreadcrumb) {
             header.updateBreadcrumb(breadcrumb);
         }

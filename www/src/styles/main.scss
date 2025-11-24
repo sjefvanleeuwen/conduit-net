@@ -727,9 +727,11 @@
 			background: _palette(accent2);
 			border-radius: 100%;
 			cursor: default;
-			display: inline-block;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 			height: 6em;
-			line-height: 5.65em;
+			line-height: 1;
 			margin: 0 0 _size(element-margin) 0;
 			text-align: center;
 			width: 6em;
