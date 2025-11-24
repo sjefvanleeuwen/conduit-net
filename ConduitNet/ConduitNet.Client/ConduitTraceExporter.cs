@@ -14,11 +14,13 @@ namespace ConduitNet.Client
     {
         private readonly ITelemetryCollector _collector;
         private readonly string _serviceName;
+        private readonly string _nodeId;
 
-        public ConduitTraceExporter(ITelemetryCollector collector, string serviceName = "Unknown")
+        public ConduitTraceExporter(ITelemetryCollector collector, string serviceName = "Unknown", string nodeId = "")
         {
             _collector = collector;
             _serviceName = serviceName;
+            _nodeId = nodeId;
         }
 
         public override ExportResult Export(in Batch<Activity> batch)
@@ -42,6 +44,12 @@ namespace ConduitNet.Client
                 foreach (var tag in activity.Tags)
                 {
                     span.Tags[tag.Key] = tag.Value?.ToString() ?? "";
+                }
+
+                // Ensure service.instance.id is present if we have a NodeId
+                if (!string.IsNullOrEmpty(_nodeId))
+                {
+                    span.Tags["service.instance.id"] = _nodeId;
                 }
 
                 spans.Add(span);

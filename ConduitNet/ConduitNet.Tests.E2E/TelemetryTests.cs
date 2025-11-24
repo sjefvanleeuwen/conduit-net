@@ -27,7 +27,7 @@ namespace ConduitNet.Tests.E2E
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             
-            var directoryPath = Path.Combine(baseDir, "ConduitNet.Examples.Directory.dll");
+            var directoryPath = Path.Combine(baseDir, "ConduitNet.Directory.dll");
             var telemetryPath = Path.Combine(baseDir, "ConduitNet.Telemetry.Node.dll");
             var userServicePath = Path.Combine(baseDir, "ConduitNet.Examples.UserService.dll");
 
@@ -36,13 +36,13 @@ namespace ConduitNet.Tests.E2E
             if (!File.Exists(userServicePath)) throw new FileNotFoundException($"UserService not found at {userServicePath}");
 
             // 1. Start Directory on 6000
-            _directory = StartProcess(directoryPath, "--urls http://localhost:6000", _directoryLogs);
+            _directory = StartProcess(directoryPath, "--Conduit:Port 6000", _directoryLogs);
 
             // 2. Start Telemetry Node on 6001, connect to Directory
-            _telemetryNode = StartProcess(telemetryPath, "--urls http://localhost:6001 --Conduit:DirectoryUrl=ws://localhost:6000/conduit --Conduit:NodeUrl=ws://localhost:6001/conduit", _telemetryLogs);
+            _telemetryNode = StartProcess(telemetryPath, "--Conduit:Port 6001 --Conduit:DirectoryUrl=ws://localhost:6000/ --Conduit:NodeUrl=ws://localhost:6001/", _telemetryLogs);
 
             // 3. Start User Service on 6002, connect to Directory
-            _userService = StartProcess(userServicePath, "--urls http://localhost:6002 --Conduit:DirectoryUrl=ws://localhost:6000/conduit --Conduit:NodeUrl=ws://localhost:6002/conduit", _userServiceLogs);
+            _userService = StartProcess(userServicePath, "--Conduit:Port 6002 --Conduit:DirectoryUrl=ws://localhost:6000/ --Conduit:NodeUrl=ws://localhost:6002/", _userServiceLogs);
 
             // Give them time to start up and register
             await Task.Delay(5000);
@@ -52,7 +52,7 @@ namespace ConduitNet.Tests.E2E
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Conduit:DirectoryUrl"] = "ws://localhost:6000/conduit"
+                    ["Conduit:DirectoryUrl"] = "ws://localhost:6000/"
                 })
                 .Build();
             

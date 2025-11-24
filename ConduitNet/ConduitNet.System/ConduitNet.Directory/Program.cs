@@ -38,7 +38,8 @@ public class MyDirectoryNode : DirectoryNode
                     .AddConsoleExporter()
                     .AddProcessor(sp => {
                         var collector = sp.GetRequiredService<ITelemetryCollector>();
-                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "DirectoryService"));
+                        var nodeContext = sp.GetRequiredService<NodeContext>();
+                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "DirectoryService", nodeContext.NodeId));
                     });
             });
     }

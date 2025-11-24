@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\ConduitNet.Core\ConduitNet.Core.csproj" />
-    <ProjectReference Include="..\ConduitNet.Node\ConduitNet.Node.csproj" />
-    <ProjectReference Include="..\ConduitNet.Contracts\ConduitNet.Contracts.csproj" />
+    <ProjectReference Include="..\..\ConduitNet.Core\ConduitNet.Core.csproj" />
+    <ProjectReference Include="..\..\ConduitNet.Node\ConduitNet.Node.csproj" />
+    <ProjectReference Include="..\..\ConduitNet.Contracts\ConduitNet.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

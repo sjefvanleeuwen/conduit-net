@@ -19,7 +19,7 @@ export class DocClient extends HTMLElement {
                     <pre class="line-numbers"><code class="language-typescript">import { ConduitClient } from 'conduit-ts-client';
 
 // Connect to the mesh
-const client = new ConduitClient('ws://localhost:5000/conduit');
+const client = new ConduitClient('ws://localhost:5000/');
 await client.connect();
 
 // Invoke a method dynamically

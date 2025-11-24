@@ -9,13 +9,9 @@ namespace ConduitNet.Server
         {
             // In a real implementation, we might register the interface type to a list
             // so the handler knows it's allowed.
-            // For now, we just map the middleware to /conduit
-            // We use Map to branch the pipeline
+            // For now, we just map the middleware to the root
             
-            app.Map("/conduit", conduitApp => 
-            {
-                conduitApp.UseMiddleware<ConduitWebSocketMiddleware>();
-            });
+            app.UseMiddleware<ConduitWebSocketMiddleware>();
 
             return app;
         }

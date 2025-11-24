@@ -27,7 +27,7 @@ namespace ConduitNet.Deployment
             }
 
             var args = new List<string>(node.Arguments);
-            args.Add($"--urls=http://localhost:{node.Port}");
+            args.Add($"--Conduit:Port={node.Port}");
 
             var psi = new ProcessStartInfo(node.ExecutablePath)
             {

@@ -30,7 +30,7 @@ namespace ConduitNet.Client
             // 2. Special handling for Directory calls to avoid recursion
             if (message.InterfaceName == nameof(IConduitDirectory))
             {
-                var dirUrl = _configuration["Conduit:DirectoryUrl"] ?? "ws://localhost:5000/conduit";
+                var dirUrl = _configuration["Conduit:DirectoryUrl"] ?? "ws://localhost:5000/";
                 message.Headers["Target-Url"] = dirUrl;
                 return await next(message);
             }
@@ -42,7 +42,7 @@ namespace ConduitNet.Client
             {
                 // Fallback for when no directory is configured (e.g. unit tests or simple setup)
                 // Default to localhost:5002 for demo purposes if not found
-                message.Headers["Target-Url"] = "ws://localhost:5002/conduit";
+                message.Headers["Target-Url"] = "ws://localhost:5002/";
                 return await next(message);
             }
 
@@ -58,11 +58,15 @@ namespace ConduitNet.Client
             }
 
             // 5. Set the Target URL
-            // Assuming the Address in NodeInfo is the base URL (e.g., http://localhost:5002)
-            // We need to convert it to the WebSocket endpoint
+            // The Address in NodeInfo should be the WebSocket URL (e.g., ws://localhost:5002)
+            // But we ensure it ends with / and has the correct scheme just in case
             var baseUri = new Uri(targetNode.Address);
-            var scheme = baseUri.Scheme == "https" ? "wss" : "ws";
-            var conduitUrl = $"{scheme}://{baseUri.Authority}/conduit";
+            string scheme = baseUri.Scheme;
+            
+            if (scheme == "http") scheme = "ws";
+            if (scheme == "https") scheme = "wss";
+            
+            var conduitUrl = $"{scheme}://{baseUri.Authority}/";
 
             message.Headers["Target-Url"] = conduitUrl;
 

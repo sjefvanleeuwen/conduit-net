@@ -55,13 +55,13 @@ graph TD
 1. **Start the Directory**:
    ```bash
    cd Examples/ConduitNet.Examples.Directory
-   dotnet run --urls http://localhost:5000
+   dotnet run --Conduit:Port 5000
    ```
 
 2. **Start a Service Node**:
    ```bash
    cd Examples/ConduitNet.Examples.UserService
-   dotnet run --urls http://localhost:5001
+   dotnet run --Conduit:Port 5001
    ```
 
 3. **Run the Frontend**:

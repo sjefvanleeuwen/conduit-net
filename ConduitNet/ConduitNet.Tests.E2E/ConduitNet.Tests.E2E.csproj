@@ -20,9 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Examples\ConduitNet.Examples.Directory\ConduitNet.Examples.Directory.csproj" />
+    <ProjectReference Include="..\ConduitNet.System\ConduitNet.Directory\ConduitNet.Directory.csproj" />
     <ProjectReference Include="..\..\Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj" />
-    <ProjectReference Include="..\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" />
+    <ProjectReference Include="..\ConduitNet.System\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" />
+    <ProjectReference Include="..\ConduitNet.System\ConduitNet.Registry\ConduitNet.Registry.csproj" />
   </ItemGroup>
 
 </Project>

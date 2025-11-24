@@ -21,7 +21,8 @@ namespace ConduitNet.Server
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
-                await _next(context);
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync("This endpoint only accepts WebSocket connections.");
                 return;
             }
 

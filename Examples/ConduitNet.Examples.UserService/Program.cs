@@ -34,7 +34,8 @@ public class UserNode : ConduitNode
                     .AddProcessor(sp => 
                     {
                         var collector = sp.GetRequiredService<ITelemetryCollector>();
-                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "UserService"));
+                        var nodeContext = sp.GetRequiredService<NodeContext>();
+                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "UserService", nodeContext.NodeId));
                     });
             });
     }

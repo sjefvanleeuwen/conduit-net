@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "sass": "^1.69.0",
     "typescript": "^5.2.2",
     "vite": "^7.2.4"
   },
   "dependencies": {
-    "conduit-ts-client": "file:../conduit-ts-client"
+    "conduit-ts-client": "file:../conduit-ts-client",
+    "d3": "^7.9.0"
   }
 }

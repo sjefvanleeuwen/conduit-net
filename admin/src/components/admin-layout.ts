@@ -4,6 +4,7 @@ import './admin-dashboard'
 import './admin-users'
 import './admin-roles'
 import './admin-telemetry'
+import './admin-insights'
 import './admin-query'
 
 export class AdminLayout extends HTMLElement {
@@ -27,7 +28,15 @@ export class AdminLayout extends HTMLElement {
 
     loadPage(page: string) {
         const content = this.querySelector('#content-area');
+        const header = this.querySelector('admin-header') as HTMLElement;
         if (!content) return;
+
+        // Toggle header visibility for immersive views
+        if (page === 'insights') {
+            if (header) header.style.display = 'none';
+        } else {
+            if (header) header.style.display = 'block';
+        }
 
         switch (page) {
             case 'dashboard':
@@ -41,6 +50,9 @@ export class AdminLayout extends HTMLElement {
                 break;
             case 'telemetry':
                 content.innerHTML = '<admin-telemetry></admin-telemetry>';
+                break;
+            case 'insights':
+                content.innerHTML = '<admin-insights></admin-insights>';
                 break;
             case 'query':
                 content.innerHTML = '<admin-query></admin-query>';

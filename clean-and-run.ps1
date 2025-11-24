@@ -22,21 +22,20 @@ function Start-ConduitService {
         [string]$Title
     )
 
-    $url = "http://localhost:$Port"
-    Write-Host "Starting $Title on $url..." -ForegroundColor Green
+    Write-Host "Starting $Title on port $Port..." -ForegroundColor Green
     
     # Start in a new window
-    Start-Process dotnet -ArgumentList "run --project $Project --urls=$url" -WorkingDirectory $PWD
+    Start-Process dotnet -ArgumentList "run --project $Project --Conduit:Port=$Port" -WorkingDirectory $PWD
 }
 
 # Start Directory Service (The Leader/Registry)
-Start-ConduitService -Project "Examples\ConduitNet.Examples.Directory\ConduitNet.Examples.Directory.csproj" -Port "5000" -Title "Directory Service"
+Start-ConduitService -Project "ConduitNet\ConduitNet.System\ConduitNet.Directory\ConduitNet.Directory.csproj" -Port "5000" -Title "Directory Service"
 
 # Give the directory a moment to start
 Start-Sleep -Seconds 2
 
 # Start Telemetry Service
-Start-ConduitService -Project "ConduitNet\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" -Port "5001" -Title "Telemetry Service"
+Start-ConduitService -Project "ConduitNet\ConduitNet.System\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" -Port "5001" -Title "Telemetry Service"
 
 # Start User Service
 Start-ConduitService -Project "Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj" -Port "5002" -Title "User Service"
@@ -45,7 +44,7 @@ Start-ConduitService -Project "Examples\ConduitNet.Examples.UserService\ConduitN
 Start-ConduitService -Project "Examples\ConduitNet.Examples.AclService\ConduitNet.Examples.AclService.csproj" -Port "5003" -Title "ACL Service"
 
 Write-Host "All services started." -ForegroundColor Cyan
-Write-Host "Directory: http://localhost:5000"
-Write-Host "Telemetry: http://localhost:5001"
-Write-Host "User:      http://localhost:5002"
-Write-Host "ACL:       http://localhost:5003"
+Write-Host "Directory: ws://localhost:5000"
+Write-Host "Telemetry: ws://localhost:5001"
+Write-Host "User:      ws://localhost:5002"
+Write-Host "ACL:       ws://localhost:5003"

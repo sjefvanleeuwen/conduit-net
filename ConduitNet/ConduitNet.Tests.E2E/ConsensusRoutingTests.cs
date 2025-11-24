@@ -24,22 +24,22 @@ namespace ConduitNet.Tests.E2E
             // Use DLLs directly from the build output directory (copied via ProjectReference)
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             
-            var api1Path = Path.Combine(baseDir, "ConduitNet.Examples.Directory.dll");
+            var api1Path = Path.Combine(baseDir, "ConduitNet.Directory.dll");
             var api2Path = Path.Combine(baseDir, "ConduitNet.Examples.UserService.dll");
 
             if (!File.Exists(api1Path)) throw new FileNotFoundException($"Api1 not found at {api1Path}");
             if (!File.Exists(api2Path)) throw new FileNotFoundException($"Api2 not found at {api2Path}");
 
             // 1. Start Gateway (Api1 - Directory) on 5000
-            _gateway = StartProcess(api1Path, "--urls http://localhost:5000");
+            _gateway = StartProcess(api1Path, "--Conduit:Port 5000");
 
             // 2. Start Node B (Leader) on 5003
-            // Note: We use --urls to override the port
-            _nodeB = StartProcess(api2Path, "--urls http://localhost:5003 --Consensus:IsLeader=true --Conduit:DirectoryUrl=ws://localhost:5000/conduit");
+            // Note: We use --Conduit:Port to override the port
+            _nodeB = StartProcess(api2Path, "--Conduit:Port 5003 --Consensus:IsLeader=true --Conduit:DirectoryUrl=ws://localhost:5000/");
 
             // 3. Start Node A (Follower) on 5002
             // Configured to redirect to 5003 (via Consensus LeaderUrl) but also register with Directory
-            _nodeA = StartProcess(api2Path, "--urls http://localhost:5002 --Consensus:IsLeader=false --Consensus:LeaderUrl=ws://localhost:5003/conduit --Conduit:DirectoryUrl=ws://localhost:5000/conduit");
+            _nodeA = StartProcess(api2Path, "--Conduit:Port 5002 --Consensus:IsLeader=false --Consensus:LeaderUrl=ws://localhost:5003/ --Conduit:DirectoryUrl=ws://localhost:5000/");
 
             // Give them time to start up
             await Task.Delay(5000);
@@ -51,7 +51,7 @@ namespace ConduitNet.Tests.E2E
                 
                 var filters = new List<IConduitFilter>
                 {
-                    new FixedTargetFilter("ws://localhost:5002/conduit"),
+                    new FixedTargetFilter("ws://localhost:5002/"),
                     new LeaderRoutingFilter()
                 };
                 var executor = new ConduitPipelineExecutor(transport, filters);

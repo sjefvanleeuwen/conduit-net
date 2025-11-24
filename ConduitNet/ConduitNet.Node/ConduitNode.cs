@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Server;
 using ConduitNet.Client;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using ConduitNet.Contracts;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +19,14 @@ namespace ConduitNet.Node
         private readonly IConduitDirectory _directory;
         private readonly IConfiguration _config;
         private readonly List<string> _services;
+        private readonly NodeContext _nodeContext;
 
-        public ConduitNodeRegistrationService(IConduitDirectory directory, IConfiguration config, List<string> services)
+        public ConduitNodeRegistrationService(IConduitDirectory directory, IConfiguration config, List<string> services, NodeContext nodeContext)
         {
             _directory = directory;
             _config = config;
             _services = services;
+            _nodeContext = nodeContext;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -31,11 +35,18 @@ namespace ConduitNet.Node
             // Or if we have no services to offer.
             if (_services.Count == 0) return;
 
-            var address = _config["Conduit:NodeUrl"] ?? _config["urls"] ?? "http://localhost:5000";
-            // Clean up address if it has multiple (e.g. "http://localhost:5000;https://localhost:5001")
-            address = address.Split(';')[0];
+            string? address = _config["Conduit:NodeUrl"];
+            
+            if (string.IsNullOrEmpty(address))
+            {
+                 int port = _config.GetValue<int>("Conduit:Port", 5000);
+                 address = $"ws://localhost:{port}";
+            }
 
-            var nodeId = _config["Conduit:NodeId"] ?? Guid.NewGuid().ToString();
+            // Clean up address if it has multiple (e.g. "ws://localhost:5000;wss://localhost:5001")
+            address = address!.Split(';')[0];
+
+            var nodeId = _nodeContext.NodeId;
 
             try 
             {
@@ -72,12 +83,31 @@ namespace ConduitNet.Node
         {
             Builder = WebApplication.CreateBuilder(args);
             
+            // Suppress the "Now listening on: http://..." message which confuses users expecting "ws://"
+            // The underlying server must listen on HTTP to perform the WebSocket handshake, but we don't need to advertise it.
+            Builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
+
+            // Configure Kestrel to listen on the configured port
+            // This avoids passing --urls http://... which is confusing for a WebSocket-only system
+            var port = Builder.Configuration.GetValue<int?>("Conduit:Port");
+            if (port.HasValue)
+            {
+                Builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.ListenLocalhost(port.Value);
+                });
+            }
+
             // Default Node Configuration
             ConfigureCoreServices(Builder.Services);
         }
 
         private void ConfigureCoreServices(IServiceCollection services)
         {
+            // Determine Node ID once
+            var nodeId = Builder.Configuration["Conduit:NodeId"] ?? Guid.NewGuid().ToString();
+            services.AddSingleton(new NodeContext { NodeId = nodeId });
+
             // Every node is a Server (can accept RPC)
             services.AddConduitServer();
 
