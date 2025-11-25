@@ -7,7 +7,7 @@ using ConduitNet.Core;
 using ConduitNet.Client;
 using ConduitNet.Node;
 
-namespace ConduitNet.Examples.AclService
+namespace ConduitNet.AclService
 {
     public class AclService : IAclService
     {

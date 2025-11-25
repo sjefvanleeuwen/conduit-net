@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;
 using ConduitNet.Client;
 using ConduitNet.Node;
+using ConduitNet.Directory;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;

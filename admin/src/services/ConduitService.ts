@@ -8,7 +8,15 @@ class ConduitServiceManager {
     private serviceClients = new Map<string, ConduitClient>();
     private serviceProxies = new Map<string, any>();
 
-    private readonly directoryUrl = 'ws://localhost:5000/conduit';
+    // Dynamically determine the WebSocket URL based on the current page protocol
+    private get directoryUrl(): string {
+        // In development, always use ws:// since the backend doesn't have SSL configured
+        // In production, match the page protocol
+        if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+            return 'wss://localhost:5000/conduit';
+        }
+        return 'ws://localhost:5000/conduit';
+    }
 
     async getDirectory(): Promise<IConduitDirectory> {
         if (!this.directoryProxy) {

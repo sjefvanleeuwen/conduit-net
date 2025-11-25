@@ -29,7 +29,7 @@ namespace ConduitNet.Tests.E2E
             
             var directoryPath = Path.Combine(baseDir, "ConduitNet.Directory.dll");
             var telemetryPath = Path.Combine(baseDir, "ConduitNet.Telemetry.Node.dll");
-            var userServicePath = Path.Combine(baseDir, "ConduitNet.Examples.UserService.dll");
+            var userServicePath = Path.Combine(baseDir, "ConduitNet.UserService.dll");
 
             if (!File.Exists(directoryPath)) throw new FileNotFoundException($"Directory not found at {directoryPath}");
             if (!File.Exists(telemetryPath)) throw new FileNotFoundException($"TelemetryNode not found at {telemetryPath}");

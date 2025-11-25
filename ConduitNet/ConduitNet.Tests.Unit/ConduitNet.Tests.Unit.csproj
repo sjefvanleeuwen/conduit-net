@@ -24,6 +24,7 @@
     <ProjectReference Include="..\ConduitNet.Contracts\ConduitNet.Contracts.csproj" />
     <ProjectReference Include="..\ConduitNet.Core\ConduitNet.Core.csproj" />
     <ProjectReference Include="..\ConduitNet.Node\ConduitNet.Node.csproj" />
+    <ProjectReference Include="..\ConduitNet.System\ConduitNet.Directory\ConduitNet.Directory.csproj" />
   </ItemGroup>
 
 </Project>

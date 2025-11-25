@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;
 using ConduitNet.Server;
+using ConduitNet.Node;
 
-namespace ConduitNet.Node
+namespace ConduitNet.Directory
 {
     public class DirectoryNode : ConduitNode
     {

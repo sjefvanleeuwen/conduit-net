@@ -1,4 +1,4 @@
-using ConduitNet.Examples.AclService;
+using ConduitNet.UserService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;
@@ -10,39 +10,41 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using ConduitNet.Core;
 
-new AclNode(args).Run();
+new UserNode(args).Run();
 
-public class AclNode : ConduitNode
+public class UserNode : ConduitNode
 {
-    public AclNode(string[] args) : base(args) { }
+    public UserNode(string[] args) : base(args) { }
 
     protected override void ConfigureServices(IServiceCollection services)
     {
-        // AclService needs to call UserService to get user roles
-        services.AddConduitClient<IUserService>();
-        services.AddConduitClient<ITelemetryCollector>();
+        RegisterConduitService<IUserService, UserService>();
         
-        RegisterConduitService<IAclService, AclService>();
+        // Register Telemetry Collector Client
+        services.AddConduitClient<ITelemetryCollector>();
 
         // Configure OpenTelemetry
         services.AddOpenTelemetry()
             .WithTracing(tracerProviderBuilder =>
             {
                 tracerProviderBuilder
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AclService"))
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("UserService"))
                     .AddSource(ConduitTelemetry.Source.Name)
                     .AddConsoleExporter()
                     .AddProcessor(sp => 
                     {
                         var collector = sp.GetRequiredService<ITelemetryCollector>();
                         var nodeContext = sp.GetRequiredService<NodeContext>();
-                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "AclService", nodeContext.NodeId));
+                        return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, "UserService", nodeContext.NodeId));
                     });
             });
     }
 
     protected override void Configure(WebApplication app)
     {
-        app.MapConduitService<IAclService>();
+        app.MapConduitService<IUserService>();
     }
 }
+
+public partial class Program { }
+

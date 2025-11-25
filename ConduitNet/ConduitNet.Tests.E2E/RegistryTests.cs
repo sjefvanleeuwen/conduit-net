@@ -123,9 +123,9 @@ namespace ConduitNet.Tests.E2E
         public void Dispose()
         {
             KillProcess(_registryNode);
-            if (Directory.Exists(_storagePath))
+            if (System.IO.Directory.Exists(_storagePath))
             {
-                try { Directory.Delete(_storagePath, true); } catch {}
+                try { System.IO.Directory.Delete(_storagePath, true); } catch {}
             }
         }
 

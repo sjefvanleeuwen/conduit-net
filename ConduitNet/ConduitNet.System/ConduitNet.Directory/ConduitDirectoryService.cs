@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using ConduitNet.Contracts;
 
-namespace ConduitNet.Node
+namespace ConduitNet.Directory
 {
     public class ConduitDirectoryService : IConduitDirectory
     {

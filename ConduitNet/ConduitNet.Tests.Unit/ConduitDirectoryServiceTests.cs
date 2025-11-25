@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ConduitNet.Contracts;
 using ConduitNet.Node;
+using ConduitNet.Directory;
 using Xunit;
 
 namespace ConduitNet.Tests.Unit
