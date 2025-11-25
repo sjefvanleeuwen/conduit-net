@@ -15,13 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Tests.E2E", "Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Node", "ConduitNet.Node\ConduitNet.Node.csproj", "{151CB3D5-0259-4305-8880-4A55C98405BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Examples.UserService", "..\Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj", "{6B73F94E-D1FA-4D3F-B03E-8935833B092C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.UserService", "ConduitNet.System\ConduitNet.UserService\ConduitNet.UserService.csproj", "{6B73F94E-D1FA-4D3F-B03E-8935833B092C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Deployment", "ConduitNet.Deployment\ConduitNet.Deployment.csproj", "{A51F4A61-C5F1-4887-8F78-D481A5F2F6CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Deployer", "ConduitNet.Deployer\ConduitNet.Deployer.csproj", "{6F23A5F9-8B1C-4C7E-B0F1-9EFC40C47BBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Examples.AclService", "..\Examples\ConduitNet.Examples.AclService\ConduitNet.Examples.AclService.csproj", "{FD465A75-0984-4451-B539-B1CEF0BFA4DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.AclService", "ConduitNet.System\ConduitNet.AclService\ConduitNet.AclService.csproj", "{FD465A75-0984-4451-B539-B1CEF0BFA4DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConduitNet.Tests.Unit", "ConduitNet.Tests.Unit\ConduitNet.Tests.Unit.csproj", "{AB988D13-CD06-4991-BD8E-57F68E8F1D0B}"
 EndProject
@@ -261,5 +261,7 @@ Global
 		{FA57C92F-C351-4CC7-B981-192AB4F00645} = {73BA62BB-2B41-2DC4-C714-51B3D4C2A215}
 		{2773694D-FF6A-4ADD-8117-E345CD3B0B99} = {73BA62BB-2B41-2DC4-C714-51B3D4C2A215}
 		{FA271EBA-8FB1-4991-8410-80CA688CE557} = {73BA62BB-2B41-2DC4-C714-51B3D4C2A215}
+		{6B73F94E-D1FA-4D3F-B03E-8935833B092C} = {73BA62BB-2B41-2DC4-C714-51B3D4C2A215}
+		{FD465A75-0984-4451-B539-B1CEF0BFA4DF} = {73BA62BB-2B41-2DC4-C714-51B3D4C2A215}
 	EndGlobalSection
 EndGlobal

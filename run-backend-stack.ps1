@@ -38,10 +38,10 @@ Start-Sleep -Seconds 2
 Start-ConduitService -Project "ConduitNet\ConduitNet.System\ConduitNet.Telemetry.Node\ConduitNet.Telemetry.Node.csproj" -Port "5001" -Title "Telemetry Service"
 
 # Start User Service
-Start-ConduitService -Project "Examples\ConduitNet.Examples.UserService\ConduitNet.Examples.UserService.csproj" -Port "5002" -Title "User Service"
+Start-ConduitService -Project "ConduitNet\ConduitNet.System\ConduitNet.UserService\ConduitNet.UserService.csproj" -Port "5002" -Title "User Service"
 
 # Start ACL Service
-Start-ConduitService -Project "Examples\ConduitNet.Examples.AclService\ConduitNet.Examples.AclService.csproj" -Port "5003" -Title "ACL Service"
+Start-ConduitService -Project "ConduitNet\ConduitNet.System\ConduitNet.AclService\ConduitNet.AclService.csproj" -Port "5003" -Title "ACL Service"
 
 Write-Host "All services started in mTLS mode." -ForegroundColor Cyan
 Write-Host "Directory: wss://localhost:5000"

@@ -3,7 +3,7 @@ using ConduitNet.Contracts;
 using ConduitNet.Core;
 using ConduitNet.Node;
 
-namespace ConduitNet.Examples.UserService
+namespace ConduitNet.UserService
 {
     public class UserService : IUserService
     {

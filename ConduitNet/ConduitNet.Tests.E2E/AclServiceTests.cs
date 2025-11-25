@@ -23,8 +23,8 @@ namespace ConduitNet.Tests.E2E
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             
             var directoryPath = Path.Combine(baseDir, "ConduitNet.Directory.dll");
-            var userServicePath = Path.Combine(baseDir, "ConduitNet.Examples.UserService.dll");
-            var aclServicePath = Path.Combine(baseDir, "ConduitNet.Examples.AclService.dll");
+            var userServicePath = Path.Combine(baseDir, "ConduitNet.UserService.dll");
+            var aclServicePath = Path.Combine(baseDir, "ConduitNet.AclService.dll");
 
             if (!File.Exists(directoryPath)) throw new FileNotFoundException($"Directory not found at {directoryPath}");
             if (!File.Exists(userServicePath)) throw new FileNotFoundException($"UserService not found at {userServicePath}");

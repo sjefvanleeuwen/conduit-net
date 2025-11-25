@@ -10,6 +10,7 @@ using OpenTelemetry;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using ConduitNet.Core;
+using ConduitNet.Directory;
 
 new MyDirectoryNode(args).Run();
 

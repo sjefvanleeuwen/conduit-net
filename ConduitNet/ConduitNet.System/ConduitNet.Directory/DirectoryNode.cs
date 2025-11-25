@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Contracts;
 using ConduitNet.Server;
+using ConduitNet.Node;
 
-namespace ConduitNet.Node
+namespace ConduitNet.Directory
 {
     public class DirectoryNode : ConduitNode
     {
-        public DirectoryNode(string[] args) : base(args) { }
+        public DirectoryNode(string[] args) : base(args, "DirectoryService") { }
 
         protected override void ConfigureServices(IServiceCollection services)
         {

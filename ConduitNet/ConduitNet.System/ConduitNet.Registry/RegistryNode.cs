@@ -8,7 +8,7 @@ namespace ConduitNet.Registry
 {
     public class RegistryNode : ConduitNode
     {
-        public RegistryNode(string[] args) : base(args)
+        public RegistryNode(string[] args) : base(args, "RegistryService")
         {
         }
 

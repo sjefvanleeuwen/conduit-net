@@ -14,6 +14,10 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+using ConduitNet.Core;
 
 namespace ConduitNet.Node
 {
@@ -85,7 +89,7 @@ namespace ConduitNet.Node
         protected WebApplication? App { get; private set; }
         private readonly List<string> _providedServices = new();
 
-        protected ConduitNode(string[] args)
+        protected ConduitNode(string[] args, string serviceName = "UnknownService", bool enableTelemetry = true)
         {
             Builder = WebApplication.CreateBuilder(args);
             
@@ -133,6 +137,7 @@ namespace ConduitNet.Node
             }
 
             ConfigureCoreServices(Builder.Services);
+            if (enableTelemetry) EnableTelemetry(serviceName);
         }
 
         private string FindCertPath()
@@ -178,6 +183,28 @@ namespace ConduitNet.Node
         {
             Builder.Services.AddSingleton<TInterface, TImplementation>();
             _providedServices.Add(typeof(TInterface).Name);
+        }
+
+        protected void EnableTelemetry(string serviceName)
+        {
+            // Register Telemetry Collector Client
+            Builder.Services.AddConduitClient<ITelemetryCollector>();
+
+            // Configure OpenTelemetry
+            Builder.Services.AddOpenTelemetry()
+                .WithTracing(tracerProviderBuilder =>
+                {
+                    tracerProviderBuilder
+                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
+                        .AddSource(ConduitTelemetry.Source.Name)
+                        .AddConsoleExporter()
+                        .AddProcessor(sp => 
+                        {
+                            var collector = sp.GetRequiredService<ITelemetryCollector>();
+                            var nodeContext = sp.GetRequiredService<NodeContext>();
+                            return new BatchActivityExportProcessor(new ConduitTraceExporter(collector, serviceName, nodeContext.NodeId));
+                        });
+                });
         }
 
         protected virtual void ConfigureServices(IServiceCollection services)

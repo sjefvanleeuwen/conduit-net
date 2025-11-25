@@ -30,7 +30,8 @@ namespace ConduitNet.Client
             // 2. Special handling for Directory calls to avoid recursion
             if (message.InterfaceName == nameof(IConduitDirectory))
             {
-                var dirUrl = _configuration["Conduit:DirectoryUrl"] ?? "ws://localhost:5000/";
+                // Default to wss (Secure) since we are now mTLS by default
+                var dirUrl = _configuration["Conduit:DirectoryUrl"] ?? "wss://localhost:5000/";
                 message.Headers["Target-Url"] = dirUrl;
                 return await next(message);
             }
@@ -42,7 +43,7 @@ namespace ConduitNet.Client
             {
                 // Fallback for when no directory is configured (e.g. unit tests or simple setup)
                 // Default to localhost:5002 for demo purposes if not found
-                message.Headers["Target-Url"] = "ws://localhost:5002/";
+                message.Headers["Target-Url"] = "wss://localhost:5002/";
                 return await next(message);
             }
 

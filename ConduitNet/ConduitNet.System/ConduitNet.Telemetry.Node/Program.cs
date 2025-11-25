@@ -16,7 +16,7 @@ namespace ConduitNet.Telemetry.Node
 
     public class TelemetryNode : ConduitNode
     {
-        public TelemetryNode(string[] args) : base(args) { }
+        public TelemetryNode(string[] args) : base(args, "TelemetryService", enableTelemetry: false) { }
 
         protected override void ConfigureServices(IServiceCollection services)
         {

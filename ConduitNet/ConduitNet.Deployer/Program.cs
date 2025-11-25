@@ -17,9 +17,9 @@ namespace ConduitNet.Deployer
             // We need to go up to solution root to find Examples
             var solutionDir = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", ".."));
             
-            var directoryExe = Path.Combine(solutionDir, "Examples", "ConduitNet.Examples.Directory", "bin", "Debug", "net9.0", "ConduitNet.Examples.Directory.exe");
-            var userServiceExe = Path.Combine(solutionDir, "Examples", "ConduitNet.Examples.UserService", "bin", "Debug", "net9.0", "ConduitNet.Examples.UserService.exe");
-            var aclServiceExe = Path.Combine(solutionDir, "Examples", "ConduitNet.Examples.AclService", "bin", "Debug", "net9.0", "ConduitNet.Examples.AclService.exe");
+            var directoryExe = Path.Combine(solutionDir, "ConduitNet", "ConduitNet.System", "ConduitNet.Directory", "bin", "Debug", "net9.0", "ConduitNet.Directory.exe");
+            var userServiceExe = Path.Combine(solutionDir, "ConduitNet", "ConduitNet.System", "ConduitNet.UserService", "bin", "Debug", "net9.0", "ConduitNet.UserService.exe");
+            var aclServiceExe = Path.Combine(solutionDir, "ConduitNet", "ConduitNet.System", "ConduitNet.AclService", "bin", "Debug", "net9.0", "ConduitNet.AclService.exe");
 
             if (!File.Exists(directoryExe))
             {
