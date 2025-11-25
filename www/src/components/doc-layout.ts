@@ -7,6 +7,7 @@ import './pages/doc-cli';
 import './pages/doc-cqp';
 import './pages/doc-architecture';
 import './pages/doc-telemetry';
+import './pages/doc-cluster-setup';
 
 export class DocLayout extends HTMLElement {
     connectedCallback() {
@@ -78,6 +79,10 @@ export class DocLayout extends HTMLElement {
             case 'telemetry':
                 componentName = 'doc-telemetry';
                 breadcrumb = 'Documentation / Telemetry';
+                break;
+            case 'cluster-setup':
+                componentName = 'doc-cluster-setup';
+                breadcrumb = 'Documentation / Cluster Setup';
                 break;
             default:
                 componentName = 'doc-home';

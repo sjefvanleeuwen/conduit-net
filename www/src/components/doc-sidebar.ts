@@ -7,6 +7,7 @@ export class DocSidebar extends HTMLElement {
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="#" data-page="home"><i class="icon fa-solid fa-home"></i> Home</a></li>
+                    <li><a href="#" data-page="cluster-setup"><i class="icon fa-solid fa-shield-halved"></i> Cluster Setup</a></li>
                     <li><a href="#" data-page="client"><i class="icon fa-solid fa-code"></i> TypeScript Client</a></li>
                     <li>
                         <a href="#" data-page="cli" class="has-submenu"><i class="icon fa-solid fa-terminal"></i> Conduit CLI</a>

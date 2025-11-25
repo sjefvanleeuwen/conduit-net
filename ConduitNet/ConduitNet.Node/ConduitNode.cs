@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.DependencyInjection;
 using ConduitNet.Server;
 using ConduitNet.Client;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,7 +43,10 @@ namespace ConduitNet.Node
             if (string.IsNullOrEmpty(address))
             {
                  int port = _config.GetValue<int>("Conduit:Port", 5000);
-                 address = $"ws://localhost:{port}";
+                 // Default to WSS if certs are present (we assume they are if we are here)
+                 // But we need to know if we are secure.
+                 // For now, let's assume WSS if not specified.
+                 address = $"wss://localhost:{port}";
             }
 
             // Clean up address if it has multiple (e.g. "ws://localhost:5000;wss://localhost:5001")
@@ -84,22 +90,64 @@ namespace ConduitNet.Node
             Builder = WebApplication.CreateBuilder(args);
             
             // Suppress the "Now listening on: http://..." message which confuses users expecting "ws://"
-            // The underlying server must listen on HTTP to perform the WebSocket handshake, but we don't need to advertise it.
             Builder.Logging.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
 
-            // Configure Kestrel to listen on the configured port
-            // This avoids passing --urls http://... which is confusing for a WebSocket-only system
+            // Find Certificates
+            var certPath = FindCertPath();
+            var nodeCertPath = Path.Combine(certPath, "node.pfx");
+            var caCertPath = Path.Combine(certPath, "ca.crt");
+            var hasCerts = File.Exists(nodeCertPath) && File.Exists(caCertPath);
+
             var port = Builder.Configuration.GetValue<int?>("Conduit:Port");
+
             if (port.HasValue)
             {
                 Builder.WebHost.ConfigureKestrel(options =>
                 {
-                    options.ListenLocalhost(port.Value);
+                    options.ListenAnyIP(port.Value, listenOptions =>
+                    {
+                        if (hasCerts)
+                        {
+                            var nodeCert = new X509Certificate2(nodeCertPath, "conduit");
+                            var caCert = new X509Certificate2(caCertPath);
+
+                            listenOptions.UseHttps(httpsOptions =>
+                            {
+                                httpsOptions.ServerCertificate = nodeCert;
+                                httpsOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+                                httpsOptions.ClientCertificateValidation = (cert, chain, errors) =>
+                                {
+                                    if (cert == null) return false;
+                                    // Simple check: Issuer must be our CA
+                                    return cert.Issuer == caCert.Subject;
+                                };
+                            });
+                            Console.WriteLine($"[ConduitNode] Secure Mode (mTLS) Enabled on port {port.Value}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[ConduitNode] WARNING: Certificates not found at {certPath}. Running in INSECURE HTTP mode on port {port.Value}");
+                        }
+                    });
                 });
             }
 
-            // Default Node Configuration
             ConfigureCoreServices(Builder.Services);
+        }
+
+        private string FindCertPath()
+        {
+            // Look in current dir, then up a few levels (for dev)
+            var current = Directory.GetCurrentDirectory();
+            for (int i = 0; i < 5; i++)
+            {
+                var path = Path.Combine(current, "certs");
+                if (Directory.Exists(path)) return path;
+                var parent = Directory.GetParent(current);
+                if (parent == null) break;
+                current = parent.FullName;
+            }
+            return "certs"; // Default
         }
 
         private void ConfigureCoreServices(IServiceCollection services)

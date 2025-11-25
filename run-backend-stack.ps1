@@ -15,10 +15,17 @@ function Start-ConduitService {
         [string]$Title
     )
 
-    Write-Host "Starting $Title on port $Port..." -ForegroundColor Green
+    $wssUrl = "wss://localhost:$Port"
+    Write-Host "Starting $Title on $wssUrl (mTLS)..." -ForegroundColor Green
+    
+    # We pass Conduit:Port so our code configures Kestrel with mTLS
+    # We pass Conduit:NodeUrl so the node knows its own address to register
+    # We pass Conduit:DirectoryUrl pointing to WSS
+    
+    $args = "run --project $Project --Conduit:Port=$Port --Conduit:NodeUrl=$wssUrl --Conduit:DirectoryUrl=wss://localhost:5000/conduit"
     
     # Start in a new window
-    Start-Process dotnet -ArgumentList "run --project $Project --Conduit:Port=$Port" -WorkingDirectory $PWD
+    Start-Process dotnet -ArgumentList $args -WorkingDirectory $PWD
 }
 
 # Start Directory Service (The Leader/Registry)
@@ -36,8 +43,8 @@ Start-ConduitService -Project "Examples\ConduitNet.Examples.UserService\ConduitN
 # Start ACL Service
 Start-ConduitService -Project "Examples\ConduitNet.Examples.AclService\ConduitNet.Examples.AclService.csproj" -Port "5003" -Title "ACL Service"
 
-Write-Host "All services started." -ForegroundColor Cyan
-Write-Host "Directory: ws://localhost:5000"
-Write-Host "Telemetry: ws://localhost:5001"
-Write-Host "User:      ws://localhost:5002"
-Write-Host "ACL:       ws://localhost:5003"
+Write-Host "All services started in mTLS mode." -ForegroundColor Cyan
+Write-Host "Directory: wss://localhost:5000"
+Write-Host "Telemetry: wss://localhost:5001"
+Write-Host "User:      wss://localhost:5002"
+Write-Host "ACL:       wss://localhost:5003"

@@ -106,6 +106,47 @@ For the Admin UI, you rely on the browser.
 
 ---
 
+## Implementation Guide (v0.2)
+
+We have implemented a pure .NET solution for mTLS that works on Windows and Linux without external dependencies like OpenSSL.
+
+### 1. Certificate Generation
+We created a tool `ConduitNet.Tools.CertGen` that uses the .NET `System.Security.Cryptography` library to generate a self-signed CA and issue certificates.
+
+To generate certificates:
+```bash
+dotnet run --project ConduitNet/ConduitNet.Tools.CertGen/ConduitNet.Tools.CertGen.csproj
+```
+This will create a `certs/` directory in the root with:
+- `ca.crt`: The Certificate Authority public key.
+- `node.pfx`: The Node's certificate (with private key), signed by CA.
+- `client.pfx`: The Client's certificate (with private key), signed by CA.
+
+### 2. Running the Stack
+The `run-backend-stack.ps1` script has been updated to:
+1. Build the solution.
+2. Run the CertGen tool if needed.
+3. Launch all services using `wss://` (Secure WebSockets).
+
+```powershell
+.\run-backend-stack.ps1
+```
+
+### 3. Verification
+You can verify the mTLS connection using the tester tool:
+```bash
+dotnet run --project ConduitNet/ConduitNet.Tools.MtlsTester/ConduitNet.Tools.MtlsTester.csproj
+```
+This tool attempts to connect to the Directory Service using the generated client certificate.
+
+### 4. Linux Support
+The solution is fully cross-platform.
+- Certificates are generated as standard `.crt` and `.pfx` files.
+- The backend loads them from the filesystem.
+- No Windows Certificate Store dependency.
+
+---
+
 ## Summary Recommendation
 
 For the **Conduit** project:

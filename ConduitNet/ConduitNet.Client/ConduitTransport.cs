@@ -1,8 +1,11 @@
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.IO;
 using System.IO.Pipelines;
+using System.Net.Security;
 using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -73,6 +76,32 @@ namespace ConduitNet.Client
 
                     _webSocket?.Dispose();
                     _webSocket = new ClientWebSocket();
+
+                    // Configure mTLS
+                    var certPath = FindCertPath();
+                    var clientCertPath = Path.Combine(certPath, "client.pfx");
+                    var caCertPath = Path.Combine(certPath, "ca.crt");
+
+                    if (File.Exists(clientCertPath) && File.Exists(caCertPath))
+                    {
+                        var clientCert = new X509Certificate2(clientCertPath, "conduit");
+                        var caCert = new X509Certificate2(caCertPath);
+
+                        _webSocket.Options.ClientCertificates.Add(clientCert);
+                        
+                        // Trust our CA
+                        _webSocket.Options.RemoteCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+                        {
+                            if (sslPolicyErrors == SslPolicyErrors.None) return true;
+                            
+                            // Allow if the chain is issued by our CA
+                            // For self-signed, we might just check the issuer name or thumbprint for this demo
+                            if (cert != null && cert.Issuer == caCert.Subject) return true;
+
+                            return false;
+                        };
+                    }
+
                     await _webSocket.ConnectAsync(new Uri(_url), CancellationToken.None);
 
                     _receiveTask = Task.Run(ReceiveLoopAsync);
@@ -82,6 +111,20 @@ namespace ConduitNet.Client
                 {
                     _connectLock.Release();
                 }
+            }
+
+            private string FindCertPath()
+            {
+                var current = Directory.GetCurrentDirectory();
+                for (int i = 0; i < 5; i++)
+                {
+                    var path = Path.Combine(current, "certs");
+                    if (Directory.Exists(path)) return path;
+                    var parent = Directory.GetParent(current);
+                    if (parent == null) break;
+                    current = parent.FullName;
+                }
+                return "certs";
             }
 
             private async Task SendLoopAsync()
